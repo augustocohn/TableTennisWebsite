@@ -47,8 +47,8 @@ describe('UF Directory Server Unit Tests', function() {
           In the second, assert what we should  see.
           Finally, call "done();" to move on to the next test.
         */
-          should.exist(response);
           should.not.exist(error);
+          should.exist(response);
 
           done();
       });
@@ -62,7 +62,7 @@ describe('UF Directory Server Unit Tests', function() {
       request.get('http://localhost:8080/listings', function(error, response, body) {
       	
       	// First let's assert that the body being passed by the get request actually exists or not with our general assertions, similar to the previous test:
-       	
+          should.exist(body);
 
 			// Next, use deepEquals() for object level comparison. We want to assert that the "listings" JSON provided by the get request is the same as the JSON file provided by the test (bodyData)
 			// Finally, call "done();" to move onto the next test
