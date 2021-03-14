@@ -1,14 +1,15 @@
 var http = require('http');
 var express = require('express');
 var mongoose = require("mongoose");
-
+var bodyParser = require("body-parser");
 const { Announcement } = require("./schema/announcement");
 
 var app = express();
 app.set('port', 3000);
 
-app.use(express.static('publi\
-c'));
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 //under normal circumstances, store this in a git-ignored config file or environment variable
 const DB_URI = "";
@@ -65,7 +66,7 @@ const getFileUpdatedDate = (path) => {
 	return stats.mtime;
 }
 
-app.post("/api/addannouncement", function(req, res) {
+app.post("/api/addannouncement", function (req, res) {
 	log("addannouncement");
 	try {
 		Announcement.create({ title: req.body.title, body: req.body.body, date_created: Date.now() });
@@ -76,24 +77,44 @@ app.post("/api/addannouncement", function(req, res) {
 	}
 });
 
-app.put("/api/editannouncement", function(req, res) {
+app.post("/api/editannouncement", function (req, res) {
 	log("editannouncement");
+
+	if (req.body.id === undefined)
+		return res.json({ message: "Error: Missing ID." });
+
+	log(req.body.id);
+
+	var announcement = Announcement.findByIdAndUpdate({ _id: req.body.id }, {
+		title: req.body.title,
+		body: req.body.body,
+		date_last_edited: Date.now()
+	}, {
+		new: true
+	}, function (err, model) {
+		if (err){
+			log("Failed to update announcement id: " + req.body.id);
+			return res.json({ message: "Error: Failed to update announcement" });
+		}
+	});
+
+	return res.json({ message: "Successfully updated announcement." });
 });
 
-app.delete("/api/removeannouncement/:id", function(req, res) {
+app.post("/api/removeannouncement", function (req, res) {
 	log("removeannouncement");
-	Announcement.findByIdAndDelete(req.query.id);
+	Announcement.findByIdAndDelete(req.body.id);
 });
 
-app.get("/api/getannouncements", function(req, res) {
+app.get("/api/getannouncements", function (req, res) {
 	log("getannouncements");
 
 	var limit = parseInt(req.query.count || 5);
-	Announcement.find().sort({ _id: -1 }).limit(limit).exec(function(err, posts){
-		if(err){
+	Announcement.find().sort({ _id: -1 }).limit(limit).exec(function (err, posts) {
+		if (err) {
 			console.log(err);
 		}
-		else{
+		else {
 			return res.send(posts);
 		}
 	});
