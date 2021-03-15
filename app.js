@@ -24,7 +24,7 @@ mongoose.connect(process.env.DB_URI || DB_URI, {
 
 const connection = mongoose.connection;
 connection.once("open", () => {
-	console.log("MongoDB database connected");
+	log("MongoDB database connected");
 });
 connection.on("error", (error) => console.log("Error: " + error));
 
@@ -40,19 +40,20 @@ function log(msg) {
 }
 
 app.post("/api/addannouncement", function (req, res) {
-	log("addannouncement");
 	try {
-		Announcement.create({ title: req.body.title, body: req.body.body, date_created: Date.now() });
+		Announcement.create({
+			title: req.body.title,
+			body: req.body.body,
+			date_created: Date.now()
+		});
 
 		return res.json({ message: "Successfully created announcement." });
 	} catch (error) {
-		return res.json({ message: error });
+		return res.json({ message: "Failed to create annoucement." });
 	}
 });
 
 app.post("/api/editannouncement", function (req, res) {
-	log("editannouncement");
-
 	if (req.body.id === undefined)
 		return res.json({ message: "Error: Missing ID." });
 
@@ -73,7 +74,6 @@ app.post("/api/editannouncement", function (req, res) {
 });
 
 app.post("/api/removeannouncement", function (req, res) {
-	log("removeannouncement");
 	Announcement.findByIdAndDelete({ _id: req.body.id }, {}, function (err, announcement) {
 		if (err) {
 			log("Failed to delete announcement id: " + req.body.id);
@@ -85,9 +85,8 @@ app.post("/api/removeannouncement", function (req, res) {
 });
 
 app.get("/api/getannouncements", function (req, res) {
-	log("getannouncements");
-
 	var limit = parseInt(req.query.count || 5);
+
 	Announcement.find().sort({ _id: -1 }).limit(limit).exec(function (err, posts) {
 		if (err) {
 			console.log(err);
