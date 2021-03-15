@@ -4,8 +4,13 @@ var mongoose = require("mongoose");
 const { Announcement } = require("./schema/announcement");
 
 var app = express();
-app.set('port', 3000);
 
+//server port can be set via the PORT environment virable
+//if no environment variable is set, default port will be 3000
+app.set('port', process.env.PORT || 3000);
+
+//set static folder to public
+//all webfiles in this folder will be publicly accessible from the server
 app.use(express.static('public'));
 
 //express middleware used for parsing req and body objects
