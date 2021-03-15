@@ -1,15 +1,14 @@
 var http = require('http');
 var express = require('express');
 var mongoose = require("mongoose");
-var bodyParser = require("body-parser");
 const { Announcement } = require("./schema/announcement");
 
 var app = express();
 app.set('port', 3000);
 
 app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 //under normal circumstances, store this in a git-ignored config file or environment variable
 const DB_URI = "";
