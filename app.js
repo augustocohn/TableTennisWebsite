@@ -39,33 +39,6 @@ function log(msg) {
 	console.log(time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds() + "." + time.getMilliseconds() + " - " + msg);
 }
 
-function saveToJson(filePath, content) {
-	log("Saving " + filePath);
-
-	fs.writeFileSync(filePath, content);
-}
-
-const isLocalFileUpToDate = (filePath) => {
-	if (fs.existsSync(filePath)) {
-		//log(filePath + " exists.")
-		var currentTime = new Date();
-		var lastModified = getFileUpdatedDate(filePath);
-		var timeDifference = Math.abs(currentTime.getTime() - lastModified.getTime());
-
-		if (timeDifference < oneMinInMS) {
-			return true;
-		}
-	}
-
-	log(filePath + " is outdated or does not exist.");
-	return false;
-}
-
-const getFileUpdatedDate = (path) => {
-	const stats = fs.statSync(path);
-	return stats.mtime;
-}
-
 app.post("/api/addannouncement", function (req, res) {
 	log("addannouncement");
 	try {
