@@ -83,9 +83,7 @@ app.post("/api/editannouncement", function (req, res) {
 	if (req.body.id === undefined)
 		return res.json({ message: "Error: Missing ID." });
 
-	log(req.body.id);
-
-	var announcement = Announcement.findByIdAndUpdate({ _id: req.body.id }, {
+	Announcement.findByIdAndUpdate({ _id: req.body.id }, {
 		title: req.body.title,
 		body: req.body.body,
 		date_last_edited: Date.now()
@@ -94,11 +92,13 @@ app.post("/api/editannouncement", function (req, res) {
 	}, function (err, model) {
 		if (err){
 			log("Failed to update announcement id: " + req.body.id);
-			return res.json({ message: "Error: Failed to update announcement" });
+			return res.json({ message: "Error: Failed to update announcement: " + err });
+		} else {
+			return res.json({ message: "Successfully updated announcement." });
 		}
 	});
 
-	return res.json({ message: "Successfully updated announcement." });
+	
 });
 
 app.post("/api/removeannouncement", function (req, res) {
