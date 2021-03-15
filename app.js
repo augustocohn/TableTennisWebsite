@@ -90,20 +90,25 @@ app.post("/api/editannouncement", function (req, res) {
 	}, {
 		new: true
 	}, function (err, model) {
-		if (err){
+		if (err) {
 			log("Failed to update announcement id: " + req.body.id);
 			return res.json({ message: "Error: Failed to update announcement: " + err });
 		} else {
 			return res.json({ message: "Successfully updated announcement." });
 		}
 	});
-
-	
 });
 
 app.post("/api/removeannouncement", function (req, res) {
 	log("removeannouncement");
-	Announcement.findByIdAndDelete(req.body.id);
+	Announcement.findByIdAndDelete({ _id: req.body.id }, {}, function (err, announcement) {
+		if (err) {
+			log("Failed to delete announcement id: " + req.body.id);
+			return res.json({ message: "Error: Failed to delete announcement: " + err });
+		} else {
+			return res.json({ message: "Successfully deleted announcement." });
+		}
+	});
 });
 
 app.get("/api/getannouncements", function (req, res) {
