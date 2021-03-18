@@ -7,7 +7,7 @@
         <script
             src="https://code.jquery.com/jquery-3.3.1.js"
             integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-            crossorigin="anonymous">
+            crossorigin="anonymous"></script>
         </script>
         <script> 
             $(function(){
@@ -28,10 +28,20 @@
                 </h5>
                 <hr>
                 <h4>Post Announcement</h4>
-                <br>
+                
+                <form id="post-title">
+                    <textarea name="title-content"></textarea>
+                </form>
                 <form id="post-announcement">
                     <textarea name="announcement-content"></textarea>
                     <br><br>
+                </form>
+                <form action="/api/addannouncement" method="POST" id="post-announcement">
+                    <input type="text" id="title" name="title" required />
+                    <br/>
+                    <textarea type="text" id="body" name="body" required >
+                    </textarea>
+                    <br/>
                     <input type="submit" value="Post">
                 </form>
                 <hr>
@@ -91,5 +101,7 @@
             </div>      
         </div>
         <div id="footer"></div>
+        <script app="app.js"></script>
+        
     </body>
 </html>
