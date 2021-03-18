@@ -18,11 +18,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //mongodb url used for testing, to be cleared before committing 
-const DB_URI = "";
+const DB_URI = "mongodb+srv://dbAdmin:dbPassword@cluster0.iycaa.mongodb.net/test?authSource=admin&replicaSet=atlas-s8qatg-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true";
 
 //connect to db
 //mongodb url needs to be passed through the DB_URI environment variable
-mongoose.connect(process.env.DB_URI || DB_URI, {
+mongoose.connect(DB_URI, {
 	useNewUrlParser: true,
 	useCreateIndex: true,
 	useUnifiedTopology: true,
