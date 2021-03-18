@@ -128,6 +128,24 @@ app.get("/api/getannouncements", function (req, res) {
 	});
 });
 
+//User authentication
+//Testing
+var Schema = mongoose.Schema;
+var loginSchema = new Schema({
+	uname: String,
+	psw: String
+});
+var reg = mongoose.model('reg', loginSchema);
+
+app.get("/login", (req,res) => {
+	reg.findOne({uname:req.body.uname, psw:req.body.psw}, function(err,user){
+		if(err || !user){
+			res.send("User not found")
+		}
+		res.send("Logged in successfully")
+	}
+)});
+
 //route used for 404, page/file not found errors
 app.use(function (req, res) {
 	res.type('text/plain');
@@ -147,3 +165,4 @@ app.use(function (err, req, res, next) {
 app.listen(app.get('port'), function () {
 	log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
 });
+
