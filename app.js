@@ -1,7 +1,9 @@
 var http = require('http');
 var express = require('express');
 var mongoose = require("mongoose");
+var fs = require('fs');
 const { Announcement } = require("./schema/announcement");
+const { reg } = require("./schema/logins");
 
 var app = express();
 
@@ -34,7 +36,6 @@ connection.once("open", () => {
 	log("MongoDB database connected");
 });
 connection.on("error", (error) => console.log("Error: " + error));
-
 //allows other websites to access information on this site
 //likely unneeded and might be removed in future
 app.use(function (req, res, next) {
@@ -49,6 +50,101 @@ function log(msg) {
 	var time = new Date();
 	console.log(time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds() + "." + time.getMilliseconds() + " - " + msg);
 }
+
+//allows the html to access things like css
+app.use(express.static('../../var/www/html'));
+
+//load HTML files
+app.get('/', function(request, res){
+	fs.readFile('./public/index.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/about', function(request, res){
+	fs.readFile('./public/about.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/admin', function(request, res){
+	fs.readFile('./public/admin.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/contact', function(request, res){
+	fs.readFile('./public/contact.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/faq', function(request, res){
+	fs.readFile('./public/faq.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/shop', function(request, res){
+	fs.readFile('./public/shop.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/tournament', function(request, res){
+	fs.readFile('./public/tournament.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/photos', function(request, res){
+	fs.readFile('./public/photos.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+
+
 
 //route used for adding announcement to the db
 //will return status in json 'message' field
@@ -128,6 +224,17 @@ app.get("/api/getannouncements", function (req, res) {
 	});
 });
 
+//User authentication
+app.post("/login", (req,res) => {
+	reg.find().where('username').equals(req.body.uname).exec(function(err,user){
+		if(err || !user){
+			return res.json({ message: "User does not exist or an error has occured.", uname: req.body.uname, password: req.body.psw });
+		}
+		return res.send(user);//temp line to show user received from db
+		return res.json({ message: "Logged in successfully" });
+	}
+)});
+
 //route used for 404, page/file not found errors
 app.use(function (req, res) {
 	res.type('text/plain');
@@ -147,3 +254,4 @@ app.use(function (err, req, res, next) {
 app.listen(app.get('port'), function () {
 	log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
 });
+

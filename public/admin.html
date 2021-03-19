@@ -22,12 +22,12 @@
             <h1>Admin Panel Login</h1>
             <div id="admin">
                 <div id="admin-form">
-                <form>
-                <label>Username:</label><br>
-                <input type="text" name="username"><br>
-                <label>Password:</label><br>
-                <input type="text" name="user"><br>
-                <input type="submit" value="Log In">
+                <form action = "/login" method = "POST">
+                <label for = 'uname'>Username:</label><br>
+                <input type="text" placeholder = "Enter Username" name="uname" required><br>
+                <label for = "psw">Password:</label><br>
+                <input type="text" placeholder = "Enter Password" name="psw" required><br>
+                <button type = "submit">Login</button>
                 </form>
                 </div>
             </div>
