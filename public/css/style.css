@@ -268,7 +268,7 @@ footer a{
 
 #post-announcement textarea{
 
-    width:500px;
+    width:90%;
     height:150px;
 }
 
@@ -324,11 +324,19 @@ footer a{
 }
 
 /*css for mobile devices*/
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
 @media only screen and (max-width : 640px) {
 
 	header {
 
 		position: absolute;
+        width:100vw;
 
 	}
 
@@ -368,5 +376,244 @@ footer a{
 		display: block;
 
 	}
+
+    /**/
     
+    #logo{
+
+        margin: 20px;
+        float: left;
+        width: 200px;
+        height: 40px;
+        background: url(../images/logo.png) no-repeat center;
+        background-size:100%;
+        display: block;
+    
+    }
+
+    footer{
+        
+        color: white;
+        text-decoration: none;
+        text-align: center;
+        background: #285797;
+        border-top: 4px solid #e0812e;
+        z-index:100;
+        padding:20px;
+        width: 100vw;
+    }
+
+    #main h1 {
+    
+        color: #285797;
+        font-size:30px;
+        text-align: center;
+        margin-bottom:5px;
+    }
+        
+    #main{
+        
+        width:85vw;
+        margin:auto;
+        margin-top:80px;
+        padding:50px;
+        min-height: calc(100vh - 140px);
+        text-align: center;
+    }
+    
+    .announcement{
+        
+        background:white;
+        padding:15px;
+        margin-top:10px;
+        border-radius:15px;
+        box-shadow: 0px 0px 5px black;
+    }
+    
+    .announcement h5{
+        margin-bottom: 5px;
+    }
+    
+    .announcement h4{
+        font-weight:100;
+        font-style:italic;
+        margin-top:10px;
+        text-align: right;
+    }
+    
+    #admin{
+        background:white;
+        border-radius: 50px;
+        height:15vh;
+        width:50vw;
+        margin:auto;
+        margin-top:10px;
+        padding:25px;
+        box-shadow: 0px 0px 5px;
+    }
+    
+    #admin input{
+        margin-bottom: 10px;
+    }
+    
+    #admin form{
+        
+        display: inline-block;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: left;
+    }
+    
+    #admin-form{
+        
+        display:block;
+        text-align: center;
+    }
+    
+    #admin input[type="submit"]{
+        margin:auto;
+        display:block;
+    }
+    
+    #content{
+    
+        background: white;
+        padding: 25px;
+        min-height:60vh;
+        margin-top:10px;
+        box-shadow: 0px 0px 5px black;
+        width:70vw;
+        margin:auto;
+    }
+    
+    #about-pictures {
+    
+        text-align: center;
+    }
+    
+    #about-pictures img{
+    
+        background:gray;
+        display:inline-block;
+        width: 150px;
+        height:200px;
+        margin-top:25px;
+        margin-right:35px;
+        margin-left:35px;
+    }
+    
+    #slideshow{
+    
+        width:80vw;
+        display:block;
+        position:relative;
+        text-align: center;
+        margin:auto;
+        margin-bottom:10px;
+    }
+    
+    #slideshow .slide{
+    
+        width:100%;
+        display:inline-block;
+        text-align: center;
+        margin:auto;
+    }
+    
+    .slide-change{
+    
+        color:white;
+        position:absolute;
+        height:100%;
+        font-weight: bolder;
+        font-size: 25px;
+        font-family: sans-serif;
+        border:none;
+        cursor:pointer;
+        display:inline-block;
+        z-index: 100;
+        padding:0px 10px;
+        background-color: rgba(255, 255, 255, 0);
+        top: 0;
+    }
+    
+    .slide-change:hover{
+    
+        background:rgba(255, 255, 255, 0.3)
+    }
+    
+    .slide-right{
+    
+        right:0%;
+        box-shadow: -10px 0px 5px -5px rgb(0,0,0, 0.5);
+    }
+    
+    .slide-left{
+    
+        left:0%;
+        box-shadow: 10px 0px 5px -5px rgb(0,0,0, 0.5);
+    }
+    
+    .admin-category{
+    
+        font-size:125%;
+        color:#093f87;
+    }
+    
+    #post-announcement textarea{
+    
+        width:90%;
+        height:150px;
+    }
+    
+    .announcement-edit {
+    
+        border-top:1px solid black;
+        border-bottom:1px solid black;
+        padding:5px;
+    }
+    
+    .announcement-edit:nth-child(odd) {
+    
+        background:rgb(236, 236, 236);
+    }
+    
+    .announcement-edit h5{
+    
+        margin-bottom: 5px;
+    }
+    
+    .announcement-edit h4{
+    
+        font-style:italic;
+        font-weight:normal;
+        margin-top:5px;
+        margin-bottom:5px;
+    }
+    
+    .photo-div{
+    
+        background: white;
+        padding: 25px;
+        min-height:60vh;
+        margin-top:10px;
+        box-shadow: 0px 0px 5px black;
+    }
+    
+    .photo-div img{
+    
+        background:black;
+        width:400px;
+        height:250px;
+    }
+    
+    .product {
+    
+        display:inline-block;
+        margin-bottom:10px;
+    }
+    
+    .product img {
+        max-width:500px;
+    }
 }
