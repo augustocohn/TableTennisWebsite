@@ -159,7 +159,8 @@ app.post("/api/addannouncement", function (req, res) {
 			date_created: Date.now()
 		});
 
-		return res.json({ message: "Successfully created announcement." });
+		 //res.json({ message: "Successfully created announcement." });
+		 res.redirect("/adminpanel.html");
 	} catch (error) {
 		return res.json({ message: "Failed to create annoucement." });
 	}
