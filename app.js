@@ -1,7 +1,11 @@
 var http = require('http');
 var express = require('express');
 var mongoose = require("mongoose");
+var fs = require('fs');
+var session = require("express-session");
 const { Announcement } = require("./schema/announcement");
+const { User } = require("./schema/logins");
+
 
 var app = express();
 
@@ -17,8 +21,15 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+//express-session
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+}));
+
 //mongodb url used for testing, to be cleared before committing 
-const DB_URI = "";
+const DB_URI = "mongodb+srv://dbAdmin:dbPassword@cluster0.iycaa.mongodb.net/test?authSource=admin&replicaSet=atlas-s8qatg-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true";
 
 //connect to db
 //mongodb url needs to be passed through the DB_URI environment variable
@@ -34,7 +45,6 @@ connection.once("open", () => {
 	log("MongoDB database connected");
 });
 connection.on("error", (error) => console.log("Error: " + error));
-
 //allows other websites to access information on this site
 //likely unneeded and might be removed in future
 app.use(function (req, res, next) {
@@ -50,12 +60,123 @@ function log(msg) {
 	console.log(time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds() + "." + time.getMilliseconds() + " - " + msg);
 }
 
+//allows the html to access things like css
+app.use(express.static('../../var/www/html'));
+
+//load HTML files
+app.get('/', function(req, res){
+	fs.readFile('./public/index.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/about', function(req, res){
+	fs.readFile('./public/about.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/admin', function(req, res){
+	fs.readFile('./public/admin.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/contact', function(req, res){
+	fs.readFile('./public/contact.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/faq', function(req, res){
+	fs.readFile('./public/faq.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/shop', function(req, res){
+	fs.readFile('./public/shop.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/tournament', function(req, res){
+	fs.readFile('./public/tournament.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/photos', function(req, res){
+	fs.readFile('./public/photos.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+app.get('/adminpanel', function(req, res){
+	fs.readFile('./public/adminpanel.html', function (err, html) {
+		if (err || !req.session.admin) {
+			res.writeHead(404);
+			res.write('File not found!');
+			res.end();
+			return;
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);  
+			res.end();
+	});
+});
+
+
+
 //route used for adding announcement to the db
 //will return status in json 'message' field
 //required variables:
 //	title:	the title of the announcement
 //	body:	the body content of the announcement post
 app.post("/api/addannouncement", function (req, res) {
+	if(!req.session.admin){
+		return res.json({ message: "Error: User unauthorized"})
+	}
 	try {
 		Announcement.create({
 			title: req.body.title,
@@ -76,6 +197,9 @@ app.post("/api/addannouncement", function (req, res) {
 //	title:	the new title of the announcement
 //	body:	the new body content of the announcement post
 app.post("/api/editannouncement", function (req, res) {
+	if(!req.session.admin){
+		return res.json({ message: "Error: User unauthorized"})
+	}
 	if (req.body.id === undefined)
 		return res.json({ message: "Error: Missing ID." });
 
@@ -100,6 +224,9 @@ app.post("/api/editannouncement", function (req, res) {
 //required variables:
 //	id:		the id of the announcement to be removed
 app.post("/api/removeannouncement", function (req, res) {
+	if(!req.session.admin){
+		return res.json({ message: "Error: User unauthorized"})
+	}
 	Announcement.findByIdAndDelete({ _id: req.body.id }, {}, function (err, announcement) {
 		if (err) {
 			log("Failed to delete announcement id: " + req.body.id);
@@ -117,7 +244,6 @@ app.post("/api/removeannouncement", function (req, res) {
 //	count:	the number of recent announcement posts to retrieve
 app.get("/api/getannouncements", function (req, res) {
 	var limit = parseInt(req.query.count || 5);
-
 	Announcement.find().sort({ _id: -1 }).limit(limit).exec(function (err, posts) {
 		if (err) {
 			console.log(err);
@@ -129,20 +255,14 @@ app.get("/api/getannouncements", function (req, res) {
 });
 
 //User authentication
-//Testing
-var Schema = mongoose.Schema;
-var loginSchema = new Schema({
-	uname: String,
-	psw: String
-});
-var reg = mongoose.model('reg', loginSchema);
 
-app.get("/login", (req,res) => {
-	reg.findOne({uname:req.body.uname, psw:req.body.psw}, function(err,user){
+app.post("/login", (req,res) => {
+	User.findOne({username:req.body.uname, password:req.body.psw}, function(err,user){
 		if(err || !user){
-			res.send("User not found")
+			return res.json({ message: "User does not exist or an error has occured.", uname: req.body.uname, password: req.body.psw });
 		}
-		res.send("Logged in successfully")
+		req.session.admin = true;
+		res.redirect("/adminpanel");
 	}
 )});
 
