@@ -29,7 +29,7 @@ app.use(session({
 }));
 
 //mongodb url used for testing, to be cleared before committing 
-const DB_URI = "mongodb+srv://dbAdmin:dbPassword@cluster0.iycaa.mongodb.net/test?authSource=admin&replicaSet=atlas-s8qatg-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true";
+const DB_URI = "mongodb+srv://dbAdmin:dbPassword@cluster0.iycaa.mongodb.net/tableTennis?authSource=admin&replicaSet=atlas-s8qatg-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true";
 
 //connect to db
 //mongodb url needs to be passed through the DB_URI environment variable
@@ -87,15 +87,29 @@ app.get('/about', function(req, res){
 	});
 });
 app.get('/admin', function(req, res){
-	fs.readFile('./public/admin.html', function (err, html) {
-		if (err) {
-			res.writeHead(404);
-			res.write('File not found!');
-		}
-			res.writeHeader(200, {"Content-Type": "text/html"});  
-			res.write(html);  
-			res.end();
-	});
+	if(req.session.admin){
+		fs.readFile('./public/adminpanel.html', function (err, html) {
+			if (err || !req.session.admin) {
+				res.writeHead(404);
+				res.write('File not found!');
+				res.end();
+				return;
+			}
+				res.writeHeader(200, {"Content-Type": "text/html"});  
+				res.write(html);  
+				res.end();
+		});
+	}else{
+		fs.readFile('./public/admin.html', function (err, html) {
+			if (err) {
+				res.writeHead(404);
+				res.write('File not found!');
+			}
+				res.writeHeader(200, {"Content-Type": "text/html"});  
+				res.write(html);  
+				res.end();
+		});
+	}
 });
 app.get('/contact', function(req, res){
 	fs.readFile('./public/contact.html', function (err, html) {
@@ -152,19 +166,6 @@ app.get('/photos', function(req, res){
 			res.end();
 	});
 });
-app.get('/adminpanel', function(req, res){
-	fs.readFile('./public/adminpanel.html', function (err, html) {
-		if (err || !req.session.admin) {
-			res.writeHead(404);
-			res.write('File not found!');
-			res.end();
-			return;
-		}
-			res.writeHeader(200, {"Content-Type": "text/html"});  
-			res.write(html);  
-			res.end();
-	});
-});
 
 
 
@@ -214,6 +215,7 @@ app.post("/api/editannouncement", function (req, res) {
 			log("Failed to update announcement id: " + req.body.id);
 			return res.json({ message: "Error: Failed to update announcement: " + err });
 		} else {
+			res.redirect("/admin");
 			return res.json({ message: "Successfully updated announcement." });
 		}
 	});
@@ -232,6 +234,7 @@ app.post("/api/removeannouncement", function (req, res) {
 			log("Failed to delete announcement id: " + req.body.id);
 			return res.json({ message: "Error: Failed to delete announcement: " + err });
 		} else {
+			res.redirect("/admin");
 			return res.json({ message: "Successfully deleted announcement." });
 		}
 	});
@@ -262,7 +265,7 @@ app.post("/login", (req,res) => {
 			return res.json({ message: "User does not exist or an error has occured.", uname: req.body.uname, password: req.body.psw });
 		}
 		req.session.admin = true;
-		res.redirect("/adminpanel");
+		res.redirect("/admin");
 	}
 )});
 
