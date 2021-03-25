@@ -3,7 +3,7 @@ var express = require('express');
 var mongoose = require("mongoose");
 var fs = require('fs');
 const { Announcement } = require("./schema/announcement");
-const { reg } = require("./schema/logins");
+const { User } = require("./schema/logins");
 
 var app = express();
 
@@ -160,7 +160,9 @@ app.post("/api/addannouncement", function (req, res) {
 		});
 
 		 //res.json({ message: "Successfully created announcement." });
+		 
 		 res.redirect("/adminpanel.html");
+		 
 	} catch (error) {
 		return res.json({ message: "Failed to create annoucement." });
 	}
@@ -185,9 +187,9 @@ app.post("/api/editannouncement", function (req, res) {
 	}, function (err, model) {
 		if (err) {
 			log("Failed to update announcement id: " + req.body.id);
-			return res.json({ message: "Error: Failed to update announcement: " + err });
+			res.redirect("/adminpanel.html");
 		} else {
-			return res.json({ message: "Successfully updated announcement." });
+			res.redirect("/adminpanel.html");
 		}
 	});
 });
@@ -227,7 +229,7 @@ app.get("/api/getannouncements", function (req, res) {
 
 //User authentication
 app.post("/login", (req,res) => {
-	reg.find().where('username').equals(req.body.uname).exec(function(err,user){
+	User.find().where('username').equals(req.body.uname).exec(function(err,user){
 		if(err || !user){
 			return res.json({ message: "User does not exist or an error has occured.", uname: req.body.uname, password: req.body.psw });
 		}
