@@ -13,6 +13,6 @@ const loginSchema = new mongoose.Schema({
     }
 });
 
-const reg = mongoose.model('db', loginSchema, 'db');
+const User = mongoose.model('user', loginSchema);
 
-module.exports = { reg };
+module.exports = { User };
