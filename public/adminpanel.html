@@ -2,7 +2,7 @@
 <html>
     <head>
         <link type="text/css" rel="stylesheet" href="css/style.css" />
-        <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <title>UF | Table Tennis Club</title>
         <script
             src="https://code.jquery.com/jquery-3.3.1.js"
@@ -14,9 +14,70 @@
                 $("#header").load("header.html"); 
                 $("#footer").load("footer.html"); 
             });
+
+            function getTime(x) {
+                d = new Date(x);
+                return d.toDateString() + ' ' + d.toLocaleTimeString();
+            }
+                var req = new XMLHttpRequest();
+                req.overrideMimeType("application/json");
+                req.open("GET", '/api/getannouncements', true);
+                
+                req.onload = function() {
+                    var res = JSON.parse(req.responseText);
+                    for(i in res){
+                    document.getElementById('editannouncements').innerHTML = document.getElementById('editannouncements').innerHTML
+                    + '<div class="announcement-edit" id ='+ res[i]._id +'>'
+                    + '<h5 id=title'+res[i]._id+'>' + res[i].title + '</h5>'
+                    + '<p id=body'+res[i]._id+'>' + res[i].body + '</p>'
+                    + '<h4 id=date'+res[i]._id+'>' + getTime(res[i].date_created)
+                    + '</h4>'
+                    + `<button onclick="editAnnouncement(this.id)" id="${res[i]._id}">Edit</button><button onclick="deleteAnnouncement(this.id)" id="${res[i]._id}">Delete</button>`
+                    //use res[i]."_id"
+                    
+                    }
+                    
+                };
+                
+                req.send(null);
         </script> 
+        
+        <script>
+            function editAnnouncement(clicked_id) {
+                    var title = document.getElementById('title'+clicked_id).textContent;
+                    let body = document.getElementById('body'+clicked_id).innerHTML;
+                    let date = document.getElementById('date'+clicked_id).innerText;
+
+                    document.getElementById(clicked_id).innerHTML = '<form action="/api/editannouncement" method="POST" id="edit-announcement">'
+                    + `<input type="text" style="display:none" value="${clicked_id}" name="id" required />`
+                    + '<br/>'
+                    + `<input type="text" value ="${title}" name="title" required />`
+                    + '<br/>'
+                    + `<textarea rows="10" cols="115" name="body" required >${body}</textarea>`
+                    + '<br/>'
+                    + '<input type="submit" id="post" value="Post">'
+                    + '</form>'
+                    
+                    /*document.getElementById(clicked_id).innerHTML = `<input type= "text" value ="${title}">` + '<br/>'
+                    + '<textarea rows="8" cols="100">' + body + '</textarea>' + '<br/>'
+                    + '<h4>' + date + '</h4>'
+                    + `<button id="edit-submit" onclick='editSubmit("${title}","${body}","${date}","${clicked_id}")'>Submit</button>` 
+                    + '<button>Delete</button>'*/
+                }
+        </script>
+
+        <script>
+            function deleteAnnouncement(clicked_id) {
+                document.getElementById(clicked_id).innerHTML = document.getElementById(clicked_id).innerHTML + '<form action="/api/removeannouncement" method="POST" id="remove-announcement">'
+                    + `<input type="text" style="display:none" value="${clicked_id}" name="id" required />`
+                    + '<input type="submit" id="delete" value="Are you sure you want to delete?">'
+                    + '</form>'
+            }
+        </script>
+
     </head>
     <body>
+        
         <div id="header"></div>
         <div id="main">
             <h1>
@@ -27,60 +88,22 @@
                     Announcements
                 </h5>
                 <hr>
-                <h4>Post Announcement</h4>
+                <h4 >Post Announcement</h4>
                 <br>
-                <form id="post-announcement">
-                    <textarea name="announcement-content"></textarea>
-                    <br><br>
-                    <input type="submit" value="Post">
+                <form action="/api/addannouncement" method="POST" id="post-announcement">
+                    <input type="text" placeholder="Title" name="title" required />
+                    <br/>
+                    <textarea name="body" placeholder="Announcement" required ></textarea>
+                    <br/>
+                    <input type="submit" id="post" value="Post">
                 </form>
                 <hr>
                 <h4>Edit</h4>
                 <br>
-                <div class="announcement-edit">
-                    <h5>Announcement Title</h5>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                    <h4>
-                    14:30 3/3/2021    
-                    </h4>
-                    <button>Edit</button>
-                    <button>Delete</button>
+                <div id="editannouncements">
+                
                 </div>
-                <div class="announcement-edit">
-                    <h5>Announcement Title</h5>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                    <h4>
-                    14:30 3/3/2021    
-                    </h4>
-                    <button>Edit</button>
-                    <button>Delete</button>
-                </div>
-                <div class="announcement-edit">
-                    <h5>Announcement Title</h5>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                    <h4>
-                    14:30 3/3/2021    
-                    </h4>
-                    <button>Edit</button>
-                    <button>Delete</button>
-                </div>
-                <div class="announcement-edit">
-                    <h5>Announcement Title</h5>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                    <h4>
-                    14:30 3/3/2021    
-                    </h4>
-                    <button>Edit</button>
-                    <button>Delete</button>
-                </div>
+
                 <br>
                 <h5 class="admin-category">
                     Tournaments
