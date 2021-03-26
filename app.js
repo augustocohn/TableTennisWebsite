@@ -25,6 +25,7 @@ app.use(express.json());
 app.use(session({
     secret: 'secret',
     resave: true,
+	rolling: true,
     saveUninitialized: true
 }));
 
@@ -184,8 +185,7 @@ app.post("/api/addannouncement", function (req, res) {
 			body: req.body.body,
 			date_created: Date.now()
 		});
-
-		return res.json({ message: "Successfully created announcement." });
+		res.redirect("/admin");
 	} catch (error) {
 		return res.json({ message: "Failed to create annoucement." });
 	}
@@ -200,7 +200,7 @@ app.post("/api/addannouncement", function (req, res) {
 app.post("/api/editannouncement", function (req, res) {
 	if(!req.session.admin){
 		return res.json({ message: "Error: User unauthorized"})
-	}
+	}else{
 	if (req.body.id === undefined)
 		return res.json({ message: "Error: Missing ID." });
 
@@ -216,9 +216,9 @@ app.post("/api/editannouncement", function (req, res) {
 			return res.json({ message: "Error: Failed to update announcement: " + err });
 		} else {
 			res.redirect("/admin");
-			return res.json({ message: "Successfully updated announcement." });
 		}
 	});
+}
 });
 
 //route used for removing existing announcement from the db
@@ -228,16 +228,16 @@ app.post("/api/editannouncement", function (req, res) {
 app.post("/api/removeannouncement", function (req, res) {
 	if(!req.session.admin){
 		return res.json({ message: "Error: User unauthorized"})
-	}
+	}else{
 	Announcement.findByIdAndDelete({ _id: req.body.id }, {}, function (err, announcement) {
 		if (err) {
 			log("Failed to delete announcement id: " + req.body.id);
 			return res.json({ message: "Error: Failed to delete announcement: " + err });
 		} else {
 			res.redirect("/admin");
-			return res.json({ message: "Successfully deleted announcement." });
 		}
 	});
+	}
 });
 
 //route used for retrieving recent $count announcements from the db
@@ -288,4 +288,3 @@ app.use(function (err, req, res, next) {
 app.listen(app.get('port'), function () {
 	log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
 });
-
