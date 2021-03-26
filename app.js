@@ -202,9 +202,9 @@ app.post("/api/removeannouncement", function (req, res) {
 	Announcement.findByIdAndDelete({ _id: req.body.id }, {}, function (err, announcement) {
 		if (err) {
 			log("Failed to delete announcement id: " + req.body.id);
-			return res.json({ message: "Error: Failed to delete announcement: " + err });
+			res.redirect("/adminpanel.html");
 		} else {
-			return res.json({ message: "Successfully deleted announcement." });
+			res.redirect("/adminpanel.html");
 		}
 	});
 });

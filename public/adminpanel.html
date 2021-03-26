@@ -32,7 +32,7 @@
                     + '<p id=body'+res[i]._id+'>' + res[i].body + '</p>'
                     + '<h4 id=date'+res[i]._id+'>' + getTime(res[i].date_created)
                     + '</h4>'
-                    + `<button onclick="myFunction(this.id)" id="${res[i]._id}">Edit</button><button id= "delete-button">Delete</button>`
+                    + `<button onclick="editAnnouncement(this.id)" id="${res[i]._id}">Edit</button><button onclick="deleteAnnouncement(this.id)" id="${res[i]._id}">Delete</button>`
                     //use res[i]."_id"
                     
                     }
@@ -43,7 +43,7 @@
         </script> 
         
         <script>
-            function myFunction(clicked_id) {
+            function editAnnouncement(clicked_id) {
                     var title = document.getElementById('title'+clicked_id).textContent;
                     let body = document.getElementById('body'+clicked_id).innerHTML;
                     let date = document.getElementById('date'+clicked_id).innerText;
@@ -66,12 +66,14 @@
                 }
         </script>
 
-        <!--<script>
-            function editSubmit(_title,_body,_date,_id) {
-                var req = new XMLHttpRequest();
-                req.open("POST", '/api/editannouncement', true);
+        <script>
+            function deleteAnnouncement(clicked_id) {
+                document.getElementById(clicked_id).innerHTML = document.getElementById(clicked_id).innerHTML + '<form action="/api/removeannouncement" method="POST" id="remove-announcement">'
+                    + `<input type="text" style="display:none" value="${clicked_id}" name="id" required />`
+                    + '<input type="submit" id="delete" value="Are you sure you want to delete?">'
+                    + '</form>'
             }
-        </script>-->
+        </script>
 
     </head>
     <body>
