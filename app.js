@@ -5,6 +5,7 @@ var fs = require('fs');
 var session = require("express-session");
 const { Announcement } = require("./schema/announcement");
 const { User } = require("./schema/logins");
+const { Tournament } = require("./schema/tournament");
 
 
 var app = express();
@@ -247,7 +248,7 @@ app.post("/api/removeannouncement", function (req, res) {
 //	count:	the number of recent announcement posts to retrieve
 app.get("/api/getannouncements", function (req, res) {
 	var limit = parseInt(req.query.count || 5);
-	Announcement.find().sort({ _id: -1 }).limit(limit).exec(function (err, posts) {
+	Announcement.find().sort({ date_created: -1 }).limit(limit).exec(function (err, posts) {
 		if (err) {
 			console.log(err);
 		}
@@ -258,7 +259,6 @@ app.get("/api/getannouncements", function (req, res) {
 });
 
 //User authentication
-
 app.post("/login", (req,res) => {
 	User.findOne({username:req.body.uname, password:req.body.psw}, function(err,user){
 		if(err || !user){
@@ -268,6 +268,13 @@ app.post("/login", (req,res) => {
 		res.redirect("/admin");
 	}
 )});
+
+//Add players to tournament
+app.post("/api/signup", (req,res) => {
+	Tournament.findByIdAndUpdate({ _id : req.body.id }, {
+		"$push" : {players : {fullname: req.body.fullname, wins: 0}}
+	}).exec()
+})
 
 //route used for 404, page/file not found errors
 app.use(function (req, res) {
