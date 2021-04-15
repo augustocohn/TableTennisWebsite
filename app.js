@@ -5,6 +5,7 @@ var fs = require('fs');
 var session = require("express-session");
 const { Announcement } = require("./schema/announcement");
 const { User } = require("./schema/logins");
+const { Tournament } = require("./schema/tournament");
 
 
 var app = express();
@@ -146,7 +147,35 @@ app.get('/shop', function(req, res){
 	});
 });
 app.get('/tournament', function(req, res){
-	fs.readFile('./public/tournament.html', function (err, html) {
+	Tournament.findOne().sort({ date: -1 }).exec(function (err, posts) {
+		if(posts.date < Date.now()){
+			fs.readFile('./public/tournament.html', function (err, html) {
+				if (err) {
+					res.writeHead(404);
+					res.write('File not found!');
+				}
+					res.writeHeader(200, {"Content-Type": "text/html"});  
+					res.write(html);
+					res.end();
+			});
+		}
+		else{
+			
+
+	fs.readFile('./public/signups.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);
+			res.end();
+	});
+		}
+	})
+});
+app.get('/photos', function(req, res){
+	fs.readFile('./public/photos.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
@@ -156,8 +185,9 @@ app.get('/tournament', function(req, res){
 			res.end();
 	});
 });
-app.get('/photos', function(req, res){
-	fs.readFile('./public/photos.html', function (err, html) {
+
+app.get('/history', function(req, res){
+	fs.readFile('./public/tournamenthistory.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
@@ -247,7 +277,7 @@ app.post("/api/removeannouncement", function (req, res) {
 //	count:	the number of recent announcement posts to retrieve
 app.get("/api/getannouncements", function (req, res) {
 	var limit = parseInt(req.query.count || 5);
-	Announcement.find().sort({ _id: -1 }).limit(limit).exec(function (err, posts) {
+	Announcement.find().sort({ date_created: -1 }).limit(limit).exec(function (err, posts) {
 		if (err) {
 			console.log(err);
 		}
@@ -258,7 +288,6 @@ app.get("/api/getannouncements", function (req, res) {
 });
 
 //User authentication
-
 app.post("/login", (req,res) => {
 	User.findOne({username:req.body.uname, password:req.body.psw}, function(err,user){
 		if(err || !user){
@@ -268,6 +297,38 @@ app.post("/login", (req,res) => {
 		res.redirect("/admin");
 	}
 )});
+
+//Add players to tournament
+app.post("/api/signup", (req,res) => {
+	Tournament.findByIdAndUpdate({ _id : req.body.id }, {
+		"$push" : {players : {fullname: req.body.fullname, wins: 0}}
+	}).exec();
+	res.redirect("/tournament");
+});
+
+//Get Tournaments
+app.get("/api/gettournaments", function (req, res) {
+	Tournament.find().sort({ date: -1 }).exec(function (err, posts) {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			return res.send(posts);
+		}
+	})
+});
+
+//Get Tournament by ID
+app.post("/api/gettournament", function (req, res) {
+	Tournament.findById({_id: req.body.id}).exec(function (err, posts) {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			return res.send(posts);
+		}
+	})
+});
 
 //route used for 404, page/file not found errors
 app.use(function (req, res) {

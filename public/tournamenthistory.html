@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="css/style.css" />
+        <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1">
+        <title>UF | Table Tennis Club</title>
+        <script
+            src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+            crossorigin="anonymous">
+        </script>
+        <script> 
+            $(function(){
+                $("#header").load("header.html"); 
+                $("#footer").load("footer.html"); 
+            });
+            function getTime(x) {
+                d = new Date(x);
+                return d.toDateString() + ' ' + d.toLocaleTimeString();
+            }
+        </script> 
+        <script>
+
+            async function display(id){
+                document.getElementById('matches').innerHTML = '';
+                document.getElementById('tournament-date').innerHTML = '';
+                document.getElementById('leaderboard').innerHTML = '';
+                response = await fetch("http://localhost:3000/api/gettournament", {
+                    "headers": {
+                        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                        "accept-language": "en-US,en;q=0.9,la;q=0.8",
+                        'content-type': 'application/x-www-form-urlencoded'
+                    },
+                    "referrerPolicy": "strict-origin-when-cross-origin",
+                    "body": encodeURI('id=' + id),
+                    "method": "POST",
+                    "mode": "cors"
+                })
+                response = await response.json();
+                console.log(response)
+                str = ''
+                for(i in response.matches){
+                    str +=
+                    '<div class="round"><h1>' + i + "</h1><br>";
+                        for(j in response.matches[i][0]){
+                            player = response.matches[i][0][j].split(',');
+                            str +=
+                            '<div class="match"><h5>Match #' + j + '</h5>';
+                            if(player[2] == 1){
+                                str += '<p class="winner">' + player[0] + '</p>' +
+                                '<p>' + player[1] + '</p>'
+                            }
+                            else if(player[2] == 2){
+                                str += '<p>' + player[0] + '</p>' +
+                                '<p class="winner">' + player[1] + '</p>'
+                            }
+                            else{
+                                str += '<p>' + player[0] + '</p>' +
+                                '<p>' + player[1] + '</p>';
+                            }
+                            str += '</div>';
+                        }
+                    str +=
+                    '</div><br>';
+                }
+                    document.getElementById('matches').innerHTML += str
+                    document.getElementById('tournament-date').innerHTML = 'Tournament: ' + getTime(response.date);
+                    document.getElementById('leaderboard').innerHTML += '<h5>Leaderboard</h5><hr>'
+                    stats = [];
+                    for(i in response.players){
+                        stats.push({name: response.players[i].fullname, wins: response.players[i].wins})
+                    }
+                    stats.sort(function (a, b) {
+                        return b.wins - a.wins;
+                    });
+                    for(i in stats){
+                        document.getElementById('leaderboard').innerHTML +=
+                        '<p>' + stats[i].name + '</p>' +
+                        '<p class="win">' + stats[i].wins + '</p><br>'
+                    }
+            }
+
+            async function getTournaments(){
+                response = await fetch("http://localhost:3000/api/gettournaments", {
+                    "headers": {
+                        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                        "accept-language": "en-US,en;q=0.9,la;q=0.8"
+                    },
+                    "referrerPolicy": "strict-origin-when-cross-origin",
+                    "body": null,
+                    "method": "GET",
+                    "mode": "cors"
+                })
+                response = await response.json();
+
+                for(i in response){
+                    document.getElementById('history').innerHTML +=
+                    `<a class="tournament-h" onclick="display('${response[i]._id}')">Tournament: ` + (new Date(response[i].date)).toDateString() + '</a>';
+                }
+            }
+            getTournaments();
+    
+        </script>
+    </head>
+    <body>
+        <div id="header"></div>
+        <div id="main">
+            <div id="content">
+                <div id="signups">
+                    <h1>Tournament History</h1>
+                    <hr>
+                    <div id="history">
+                    
+                    </div>
+                    <h1 id="tournament-date"></h1>
+                    <div id="leaderboard">
+
+                    </div>
+                    <div id="matches">
+                    
+                    </div>
+                </div>
+            </div>           
+        </div>
+        <div id="footer"></div>
+    </body>
+</html>
