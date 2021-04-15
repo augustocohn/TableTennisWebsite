@@ -147,7 +147,35 @@ app.get('/shop', function(req, res){
 	});
 });
 app.get('/tournament', function(req, res){
-	fs.readFile('./public/tournament.html', function (err, html) {
+	Tournament.findOne().sort({ date: -1 }).exec(function (err, posts) {
+		if(posts.date < Date.now()){
+			fs.readFile('./public/tournament.html', function (err, html) {
+				if (err) {
+					res.writeHead(404);
+					res.write('File not found!');
+				}
+					res.writeHeader(200, {"Content-Type": "text/html"});  
+					res.write(html);
+					res.end();
+			});
+		}
+		else{
+			
+
+	fs.readFile('./public/signups.html', function (err, html) {
+		if (err) {
+			res.writeHead(404);
+			res.write('File not found!');
+		}
+			res.writeHeader(200, {"Content-Type": "text/html"});  
+			res.write(html);
+			res.end();
+	});
+		}
+	})
+});
+app.get('/photos', function(req, res){
+	fs.readFile('./public/photos.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
@@ -157,8 +185,9 @@ app.get('/tournament', function(req, res){
 			res.end();
 	});
 });
-app.get('/photos', function(req, res){
-	fs.readFile('./public/photos.html', function (err, html) {
+
+app.get('/history', function(req, res){
+	fs.readFile('./public/tournamenthistory.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
@@ -273,8 +302,33 @@ app.post("/login", (req,res) => {
 app.post("/api/signup", (req,res) => {
 	Tournament.findByIdAndUpdate({ _id : req.body.id }, {
 		"$push" : {players : {fullname: req.body.fullname, wins: 0}}
-	}).exec()
-})
+	}).exec();
+	res.redirect("/tournament");
+});
+
+//Get Tournaments
+app.get("/api/gettournaments", function (req, res) {
+	Tournament.find().sort({ date: -1 }).exec(function (err, posts) {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			return res.send(posts);
+		}
+	})
+});
+
+//Get Tournament by ID
+app.post("/api/gettournament", function (req, res) {
+	Tournament.findById({_id: req.body.id}).exec(function (err, posts) {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			return res.send(posts);
+		}
+	})
+});
 
 //route used for 404, page/file not found errors
 app.use(function (req, res) {

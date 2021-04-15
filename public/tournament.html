@@ -14,13 +14,78 @@
                 $("#header").load("header.html"); 
                 $("#footer").load("footer.html"); 
             });
+            function getTime(x) {
+                d = new Date(x);
+                return d.toDateString() + ' ' + d.toLocaleTimeString();
+            }
         </script> 
+        <script>
+            async function getTournaments(){
+                response = await fetch("http://localhost:3000/api/gettournaments", {
+                    "headers": {
+                        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                        "accept-language": "en-US,en;q=0.9,la;q=0.8"
+                    },
+                    "referrerPolicy": "strict-origin-when-cross-origin",
+                    "body": null,
+                    "method": "GET",
+                    "mode": "cors"
+                })
+                response = await response.json();
+                str = ''
+                for(i in response[0].matches){
+                    str +=
+                    '<div class="round"><h1>' + i + "</h1><br>";
+                        for(j in response[0].matches[i][0]){
+                            player = response[0].matches[i][0][j].split(',');
+                            str +=
+                            '<div class="match"><h5>Match #' + j + '</h5>';
+                            if(player[2] == 1){
+                                str += '<p class="winner">' + player[0] + '</p>' +
+                                '<p>' + player[1] + '</p>'
+                            }
+                            else if(player[2] == 2){
+                                str += '<p>' + player[0] + '</p>' +
+                                '<p class="winner">' + player[1] + '</p>'
+                            }
+                            else{
+                                str += '<p>' + player[0] + '</p>' +
+                                '<p>' + player[1] + '</p>';
+                            }
+                            str += '</div>';
+                        }
+                    str +=
+                    '</div><br>';
+                }
+                console.log(str)
+                document.getElementById('matches').innerHTML += str
+                document.getElementById('tournament-date').innerHTML += getTime(response[0].date);
+                for(i in response[0].players){
+                    document.getElementById('leaderboard').innerHTML +=
+                    '<p>' + response[0].players[i].fullname + '</p>' +
+                    '<p class="win">' + response[0].players[i].wins + '</p><br>'
+                }
+            }
+            getTournaments();
+    
+        </script>
     </head>
     <body>
         <div id="header"></div>
         <div id="main">
             <div id="content">
-                
+                <div id="signups">
+                    <h1>Tournament: <span id="tournament-date"></span></h1>
+                    <hr>
+                    <div id="leaderboard">
+                        <h5>Leaderboard</h5>
+                        <hr>
+                    </div>
+                    <div id="matches">
+                    
+                    </div>
+                </div>
+                <a class="tournament-history" href="/history">Tournament History</a>
             </div>           
         </div>
         <div id="footer"></div>
