@@ -304,13 +304,14 @@ app.post("/login", (req, res) => {
 //will return status in json 'message' field
 //required variables:
 //	date:	the date when the tournament will take place
+//	time:	the time when the tournament will take pace
 app.post("/api/addtournament", (req, res) => {
 	if (!req.session.admin) {
 		return res.json({ message: "Error: User unauthorized" })
 	}
 	try {
 		Tournament.create({
-			date: req.body.date
+			date: new Date(req.body.date + "T" + req.body.time).getTime()
 		});
 		res.redirect("/admin");
 	} catch (error) {
