@@ -338,6 +338,9 @@ app.post("/api/signup", (req, res) => {
 //	id:			id of the tournament to remove players from
 //	fullname:	full name of the player to be removed to the tournament
 app.post("/api/removeplayer", (req, res) => {
+	if (!req.session.admin) {
+		return res.json({ message: "Error: User unauthorized" })
+	}
 	Tournament.findByIdAndUpdate({ _id: req.body.id }, {
 		"$pull": { "players": { "fullname": req.body.fullname } }
 	}, { safe: true, multi: true }, function (err, obj) {
