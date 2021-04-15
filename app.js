@@ -24,10 +24,10 @@ app.use(express.json());
 
 //express-session
 app.use(session({
-    secret: 'secret',
-    resave: true,
+	secret: 'secret',
+	resave: true,
 	rolling: true,
-    saveUninitialized: true
+	saveUninitialized: true
 }));
 
 //mongodb url used for testing, to be cleared before committing 
@@ -66,30 +66,30 @@ function log(msg) {
 app.use(express.static('../../var/www/html'));
 
 //load HTML files
-app.get('/', function(req, res){
+app.get('/', function (req, res) {
 	fs.readFile('./public/index.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
 		}
-			res.writeHeader(200, {"Content-Type": "text/html"});  
-			res.write(html);  
-			res.end();
+		res.writeHeader(200, { "Content-Type": "text/html" });
+		res.write(html);
+		res.end();
 	});
 });
-app.get('/about', function(req, res){
+app.get('/about', function (req, res) {
 	fs.readFile('./public/about.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
 		}
-			res.writeHeader(200, {"Content-Type": "text/html"});  
-			res.write(html);  
-			res.end();
+		res.writeHeader(200, { "Content-Type": "text/html" });
+		res.write(html);
+		res.end();
 	});
 });
-app.get('/admin', function(req, res){
-	if(req.session.admin){
+app.get('/admin', function (req, res) {
+	if (req.session.admin) {
 		fs.readFile('./public/adminpanel.html', function (err, html) {
 			if (err || !req.session.admin) {
 				res.writeHead(404);
@@ -97,104 +97,102 @@ app.get('/admin', function(req, res){
 				res.end();
 				return;
 			}
-				res.writeHeader(200, {"Content-Type": "text/html"});  
-				res.write(html);  
-				res.end();
+			res.writeHeader(200, { "Content-Type": "text/html" });
+			res.write(html);
+			res.end();
 		});
-	}else{
+	} else {
 		fs.readFile('./public/admin.html', function (err, html) {
 			if (err) {
 				res.writeHead(404);
 				res.write('File not found!');
 			}
-				res.writeHeader(200, {"Content-Type": "text/html"});  
-				res.write(html);  
-				res.end();
+			res.writeHeader(200, { "Content-Type": "text/html" });
+			res.write(html);
+			res.end();
 		});
 	}
 });
-app.get('/contact', function(req, res){
+app.get('/contact', function (req, res) {
 	fs.readFile('./public/contact.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
 		}
-			res.writeHeader(200, {"Content-Type": "text/html"});  
-			res.write(html);  
-			res.end();
+		res.writeHeader(200, { "Content-Type": "text/html" });
+		res.write(html);
+		res.end();
 	});
 });
-app.get('/faq', function(req, res){
+app.get('/faq', function (req, res) {
 	fs.readFile('./public/faq.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
 		}
-			res.writeHeader(200, {"Content-Type": "text/html"});  
-			res.write(html);  
-			res.end();
+		res.writeHeader(200, { "Content-Type": "text/html" });
+		res.write(html);
+		res.end();
 	});
 });
-app.get('/shop', function(req, res){
+app.get('/shop', function (req, res) {
 	fs.readFile('./public/shop.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
 		}
-			res.writeHeader(200, {"Content-Type": "text/html"});  
-			res.write(html);  
-			res.end();
+		res.writeHeader(200, { "Content-Type": "text/html" });
+		res.write(html);
+		res.end();
 	});
 });
-app.get('/tournament', function(req, res){
+app.get('/tournament', function (req, res) {
 	Tournament.findOne().sort({ date: -1 }).exec(function (err, posts) {
-		if(posts.date < Date.now()){
+		if (posts.date < Date.now()) {
 			fs.readFile('./public/tournament.html', function (err, html) {
 				if (err) {
 					res.writeHead(404);
 					res.write('File not found!');
 				}
-					res.writeHeader(200, {"Content-Type": "text/html"});  
-					res.write(html);
-					res.end();
+				res.writeHeader(200, { "Content-Type": "text/html" });
+				res.write(html);
+				res.end();
 			});
 		}
-		else{
-			
-
-	fs.readFile('./public/signups.html', function (err, html) {
-		if (err) {
-			res.writeHead(404);
-			res.write('File not found!');
-		}
-			res.writeHeader(200, {"Content-Type": "text/html"});  
-			res.write(html);
-			res.end();
-	});
+		else {
+			fs.readFile('./public/signups.html', function (err, html) {
+				if (err) {
+					res.writeHead(404);
+					res.write('File not found!');
+				}
+				res.writeHeader(200, { "Content-Type": "text/html" });
+				res.write(html);
+				res.end();
+			});
 		}
 	})
 });
-app.get('/photos', function(req, res){
+app.get('/photos', function (req, res) {
 	fs.readFile('./public/photos.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
 		}
-			res.writeHeader(200, {"Content-Type": "text/html"});  
-			res.write(html);  
-			res.end();
+		res.writeHeader(200, { "Content-Type": "text/html" });
+		res.write(html);
+		res.end();
 	});
 });
 
-app.get('/history', function(req, res){
+app.get('/history', function (req, res) {
 	fs.readFile('./public/tournamenthistory.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
 		}
-			res.writeHeader(200, {"Content-Type": "text/html"});  
-			res.write(html);  
-			res.end();
+		res.writeHeader(200, { "Content-Type": "text/html" });
+		res.write(html);
+		res.end();
 	});
 });
 
@@ -206,8 +204,8 @@ app.get('/history', function(req, res){
 //	title:	the title of the announcement
 //	body:	the body content of the announcement post
 app.post("/api/addannouncement", function (req, res) {
-	if(!req.session.admin){
-		return res.json({ message: "Error: User unauthorized"})
+	if (!req.session.admin) {
+		return res.json({ message: "Error: User unauthorized" })
 	}
 	try {
 		Announcement.create({
@@ -228,27 +226,27 @@ app.post("/api/addannouncement", function (req, res) {
 //	title:	the new title of the announcement
 //	body:	the new body content of the announcement post
 app.post("/api/editannouncement", function (req, res) {
-	if(!req.session.admin){
-		return res.json({ message: "Error: User unauthorized"})
-	}else{
-	if (req.body.id === undefined)
-		return res.json({ message: "Error: Missing ID." });
+	if (!req.session.admin) {
+		return res.json({ message: "Error: User unauthorized" })
+	} else {
+		if (req.body.id === undefined)
+			return res.json({ message: "Error: Missing ID." });
 
-	Announcement.findByIdAndUpdate({ _id: req.body.id }, {
-		title: req.body.title,
-		body: req.body.body,
-		date_last_edited: Date.now()
-	}, {
-		new: true
-	}, function (err, model) {
-		if (err) {
-			log("Failed to update announcement id: " + req.body.id);
-			return res.json({ message: "Error: Failed to update announcement: " + err });
-		} else {
-			res.redirect("/admin");
-		}
-	});
-}
+		Announcement.findByIdAndUpdate({ _id: req.body.id }, {
+			title: req.body.title,
+			body: req.body.body,
+			date_last_edited: Date.now()
+		}, {
+			new: true
+		}, function (err, model) {
+			if (err) {
+				log("Failed to update announcement id: " + req.body.id);
+				return res.json({ message: "Error: Failed to update announcement: " + err });
+			} else {
+				res.redirect("/admin");
+			}
+		});
+	}
 });
 
 //route used for removing existing announcement from the db
@@ -256,17 +254,17 @@ app.post("/api/editannouncement", function (req, res) {
 //required variables:
 //	id:		the id of the announcement to be removed
 app.post("/api/removeannouncement", function (req, res) {
-	if(!req.session.admin){
-		return res.json({ message: "Error: User unauthorized"})
-	}else{
-	Announcement.findByIdAndDelete({ _id: req.body.id }, {}, function (err, announcement) {
-		if (err) {
-			log("Failed to delete announcement id: " + req.body.id);
-			return res.json({ message: "Error: Failed to delete announcement: " + err });
-		} else {
-			res.redirect("/admin");
-		}
-	});
+	if (!req.session.admin) {
+		return res.json({ message: "Error: User unauthorized" })
+	} else {
+		Announcement.findByIdAndDelete({ _id: req.body.id }, {}, function (err, announcement) {
+			if (err) {
+				log("Failed to delete announcement id: " + req.body.id);
+				return res.json({ message: "Error: Failed to delete announcement: " + err });
+			} else {
+				res.redirect("/admin");
+			}
+		});
 	}
 });
 
@@ -288,20 +286,21 @@ app.get("/api/getannouncements", function (req, res) {
 });
 
 //User authentication
-app.post("/login", (req,res) => {
-	User.findOne({username:req.body.uname, password:req.body.psw}, function(err,user){
-		if(err || !user){
+app.post("/login", (req, res) => {
+	User.findOne({ username: req.body.uname, password: req.body.psw }, function (err, user) {
+		if (err || !user) {
 			return res.json({ message: "User does not exist or an error has occured.", uname: req.body.uname, password: req.body.psw });
 		}
 		req.session.admin = true;
 		res.redirect("/admin");
 	}
-)});
+	)
+});
 
 //Add players to tournament
-app.post("/api/signup", (req,res) => {
-	Tournament.findByIdAndUpdate({ _id : req.body.id }, {
-		"$push" : {players : {fullname: req.body.fullname, wins: 0}}
+app.post("/api/signup", (req, res) => {
+	Tournament.findByIdAndUpdate({ _id: req.body.id }, {
+		"$push": { players: { fullname: req.body.fullname, wins: 0 } }
 	}).exec();
 	res.redirect("/tournament");
 });
@@ -320,7 +319,7 @@ app.get("/api/gettournaments", function (req, res) {
 
 //Get Tournament by ID
 app.post("/api/gettournament", function (req, res) {
-	Tournament.findById({_id: req.body.id}).exec(function (err, posts) {
+	Tournament.findById({ _id: req.body.id }).exec(function (err, posts) {
 		if (err) {
 			console.log(err);
 		}
