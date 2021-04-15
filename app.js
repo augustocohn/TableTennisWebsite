@@ -63,7 +63,7 @@ function log(msg) {
 }
 
 //allows the html to access things like css
-app.use(express.static('../../var/www/html'));
+app.use(express.static('public'));
 
 //load HTML files
 app.get('/', function (req, res) {
@@ -185,7 +185,7 @@ app.get('/photos', function (req, res) {
 });
 
 app.get('/history', function (req, res) {
-	fs.readFile('./public/tournamenthistory.html', function (err, html) {
+	fs.readFile('./public/tournamethnistory.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
@@ -295,6 +295,24 @@ app.post("/login", (req, res) => {
 		res.redirect("/admin");
 	}
 	)
+});
+
+//route used for adding future tournament to the db
+//will return status in json 'message' field
+//required variables:
+//	date:	the date when the tournament will take place
+app.post("/api/addtournament", (req, res) => {
+	if (!req.session.admin) {
+		return res.json({ message: "Error: User unauthorized" })
+	}
+	try {
+		Tournament.create({
+			date: req.body.date
+		});
+		res.redirect("/admin");
+	} catch (error) {
+		return res.json({ message: "Failed to create tournament." });
+	}
 });
 
 //Add players to tournament
