@@ -331,6 +331,25 @@ app.post("/api/signup", (req, res) => {
 	res.redirect("/tournament");
 });
 
+
+//route used for removing players from a future tournament
+//will redirect to admin page upon success
+//required variables:
+//	id:			id of the tournament to remove players from
+//	fullname:	full name of the player to be removed to the tournament
+app.post("/api/removeplayer", (req, res) => {
+	Tournament.findByIdAndUpdate({ _id: req.body.id }, {
+		"$pull": { "players": { "fullname": req.body.fullname } }
+	}, { safe: true, multi: true }, function (err, obj) {
+		if(err){
+			log("Error removing player " + req.body.fullname + " from tournament " + req.body.id);
+		} else {
+			log("Successfully removed player " + req.body.fullname + " from tournament " + req.body.id);
+		}
+	});
+	res.redirect("/admin");
+});
+
 //route used for retrieving tournaments from the db
 //returns json
 app.get("/api/gettournaments", function (req, res) {
