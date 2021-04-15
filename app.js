@@ -285,7 +285,11 @@ app.get("/api/getannouncements", function (req, res) {
 	});
 });
 
-//User authentication
+//route used to authenticate and login an admin
+//will return status in json 'message' field on failure and direct on success
+//required variables:
+//	uname:	the username of the user
+//	psw: 	the password of the user
 app.post("/login", (req, res) => {
 	User.findOne({ username: req.body.uname, password: req.body.psw }, function (err, user) {
 		if (err || !user) {
@@ -293,8 +297,7 @@ app.post("/login", (req, res) => {
 		}
 		req.session.admin = true;
 		res.redirect("/admin");
-	}
-	)
+	});
 });
 
 //route used for adding future tournament to the db
@@ -315,7 +318,11 @@ app.post("/api/addtournament", (req, res) => {
 	}
 });
 
-//Add players to tournament
+//route used for adding players to a future tournament
+//will redirect to tournament page upon success
+//required variables:
+//	id:			id of the tournament to add players to
+//	fullname:	full name of the player to be added to the tournament
 app.post("/api/signup", (req, res) => {
 	Tournament.findByIdAndUpdate({ _id: req.body.id }, {
 		"$push": { players: { fullname: req.body.fullname, wins: 0 } }
@@ -323,7 +330,8 @@ app.post("/api/signup", (req, res) => {
 	res.redirect("/tournament");
 });
 
-//Get Tournaments
+//route used for retrieving tournaments from the db
+//returns json
 app.get("/api/gettournaments", function (req, res) {
 	Tournament.find().sort({ date: -1 }).exec(function (err, posts) {
 		if (err) {
@@ -335,7 +343,10 @@ app.get("/api/gettournaments", function (req, res) {
 	})
 });
 
-//Get Tournament by ID
+//route used for retrieving a specific tournament by id
+//returns json
+//required variables:
+//	id:		id of the tournament to retrieve
 app.post("/api/gettournament", function (req, res) {
 	Tournament.findById({ _id: req.body.id }).exec(function (err, posts) {
 		if (err) {
