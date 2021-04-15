@@ -60,10 +60,17 @@
                 console.log(str)
                 document.getElementById('matches').innerHTML += str
                 document.getElementById('tournament-date').innerHTML += getTime(response[0].date);
+                stats = [];
                 for(i in response[0].players){
+                    stats.push({name: response[0].players[i].fullname, wins: response[0].players[i].wins})
+                }
+                stats.sort(function (a, b) {
+                    return b.wins - a.wins;
+                });
+                for(i in stats){
                     document.getElementById('leaderboard').innerHTML +=
-                    '<p>' + response[0].players[i].fullname + '</p>' +
-                    '<p class="win">' + response[0].players[i].wins + '</p><br>'
+                    '<p>' + stats[i].name + '</p>' +
+                    '<p class="win">' + stats[i].wins + '</p><br>'
                 }
             }
             getTournaments();
