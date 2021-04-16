@@ -35,22 +35,22 @@
                 str = ''
                 for(i in response[0].matches){
                     str +=
-                    '<div class="round"><h1>' + i + "</h1><br>";
-                        for(j in response[0].matches[i][0]){
-                            player = response[0].matches[i][0][j].split(',');
+                    '<div class="round"><h1>' + "Round " + (parseInt(i)+1) + "</h1><br>";
+                        for(j in response[0].matches[i]){
+                            player = response[0].matches[i][j];
                             str +=
                             '<div class="match"><h5>Match #' + j + '</h5>';
-                            if(player[2] == 1){
-                                str += '<p class="winner">' + player[0] + '</p>' +
-                                '<p>' + player[1] + '</p>'
+                            if(player.winner == 1){
+                                str += '<p class="winner">' + player.playerone + '</p>' +
+                                '<p>' + player.playertwo + '</p>'
                             }
-                            else if(player[2] == 2){
-                                str += '<p>' + player[0] + '</p>' +
-                                '<p class="winner">' + player[1] + '</p>'
+                            else if(player.winner == 2){
+                                str += '<p>' + player.playerone + '</p>' +
+                                '<p class="winner">' + player.playertwo + '</p>'
                             }
                             else{
-                                str += '<p>' + player[0] + '</p>' +
-                                '<p>' + player[1] + '</p>';
+                                str += '<p>' + player.playerone + '</p>' +
+                                '<p>' + player.playertwo + '</p>';
                             }
                             str += '</div>';
                         }
