@@ -3,12 +3,16 @@ var express = require('express');
 var mongoose = require("mongoose");
 var fs = require('fs');
 var session = require("express-session");
+var multer = require('multer');
 const { Announcement } = require("./schema/announcement");
 const { User } = require("./schema/logins");
 const { Tournament } = require("./schema/tournament");
 
 
+
 var app = express();
+
+var upload = multer({ dest: './public/'});
 
 //server port can be set via the PORT environment virable
 //if no environment variable is set, default port will be 3000
@@ -297,6 +301,25 @@ app.post("/login", (req, res) => {
 		}
 		req.session.admin = true;
 		res.redirect("/admin");
+	});
+});
+
+//route used to upload photos
+//will place the photos in ./public/images/photos/
+//required variables:
+//	file:	the image to upload and store
+app.post('/api/uploadphoto', upload.single('file'), function(req, res) {
+	if (!req.session.admin) {
+		return res.json({ message: "Error: User unauthorized" })
+	}
+	var file = __dirname + '/public/images/photos/' + req.file.originalname;
+	fs.rename(req.file.path, file, function(err) {
+		if (err) {
+			log(err);
+			res.send(500);
+		} else {
+			res.redirect("/admin");
+		}
 	});
 });
 
