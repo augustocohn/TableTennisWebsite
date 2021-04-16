@@ -326,7 +326,7 @@ app.post("/api/addtournament", (req, res) => {
 //required variables:
 //	id:			id of the tournament to add players to
 //	fullname:	full name of the player to be added to the tournament
-app.post("/api/signup", (req, res) => {
+app.post("/api/addplayer", (req, res) => {
 	Tournament.findByIdAndUpdate({ _id: req.body.id }, {
 		"$push": { players: { fullname: req.body.fullname, wins: 0 } }
 	}).exec();
