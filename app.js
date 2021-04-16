@@ -321,6 +321,95 @@ app.post("/api/addtournament", (req, res) => {
 	}
 });
 
+// Generates roundrobin brackets for the tournament passed in
+function generateTournamentMatches(id) {
+	Tournament.findById(id, function (err, tournament) {
+		var players = tournament.players.map(each => each.fullname);
+
+		if (players.length % 2 == 1) {
+			players.push("BYE");
+		}
+
+		const playerCount = players.length;
+		const countCount = playerCount - 1;
+
+		const pairings = [];
+
+		const playerIndexes = players.map((_, i) => i).slice(1);
+
+		for (let round = 0; round < countCount; round++) {
+			const roundPairings = [];
+
+			const newPlayerIndexes = [0].concat(playerIndexes);
+
+			const firstHalf = newPlayerIndexes.slice(0, playerCount/2);
+			const secondHalf = newPlayerIndexes.slice(playerCount/2, playerCount).reverse();
+
+			for (let i = 0; i < firstHalf.length; i++) {
+				roundPairings.push({
+					playerone: players[firstHalf[i]],
+					playertwo: players[secondHalf[i]],
+					winner: 0
+				});
+			}
+
+			// rotating the array
+			playerIndexes.push(playerIndexes.shift());
+			pairings.push(roundPairings);
+		}
+
+		Tournament.findByIdAndUpdate({ _id: id }, {
+			matches: pairings
+		}, { safe: true, multi: true }, function (err, obj) {
+			if (err) {
+				log("Error generating matches for tournament " + id);
+			} else {
+				log("Successfully generated matches for tournament " + id);
+			}
+		});
+	});
+
+}
+
+//route used for starting a tournament
+//will redirect to admin page upon success
+//required variables:
+//	id:		id of the tournament to start
+app.post("/api/starttournament", (req, res) => {
+	if (!req.session.admin) {
+		return res.json({ message: "Error: User unauthorized" })
+	}
+	Tournament.findByIdAndUpdate({ _id: req.body.id }, {
+		active: true
+	}, { safe: true, multi: true }, function (err, obj) {
+		if (err) {
+			log("Error starting tournament " + req.body.id);
+		} else {
+			generateTournamentMatches(req.body.id);
+			log("Successfully started tournament " + req.body.id);
+		}
+	});
+});
+
+//route used for ending a tournament
+//will redirect to admin page upon success
+//required variables:
+//	id:		id of the tournament to end
+app.post("/api/endtournament", (req, res) => {
+	if (!req.session.admin) {
+		return res.json({ message: "Error: User unauthorized" })
+	}
+	Tournament.findByIdAndUpdate({ _id: req.body.id }, {
+		active: false
+	}, { safe: true, multi: true }, function (err, obj) {
+		if (err) {
+			log("Error ending tournament " + req.body.id);
+		} else {
+			log("Successfully ended tournament " + req.body.id);
+		}
+	});
+});
+
 //route used for adding players to a future tournament
 //will redirect to tournament page upon success
 //required variables:
@@ -346,7 +435,7 @@ app.post("/api/removeplayer", (req, res) => {
 	Tournament.findByIdAndUpdate({ _id: req.body.id }, {
 		"$pull": { "players": { "fullname": req.body.fullname } }
 	}, { safe: true, multi: true }, function (err, obj) {
-		if(err){
+		if (err) {
 			log("Error removing player " + req.body.fullname + " from tournament " + req.body.id);
 		} else {
 			log("Successfully removed player " + req.body.fullname + " from tournament " + req.body.id);
