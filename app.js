@@ -330,32 +330,30 @@ function generateTournamentMatches(id) {
 			players.push("BYE");
 		}
 
-		const playerCount = players.length;
-		const countCount = playerCount - 1;
+		const player_count = players.length;
+		const round_count = player_count - 1;
 
 		const pairings = [];
 
-		const playerIndexes = players.map((_, i) => i).slice(1);
+		const player_indexes = players.map((_, i) => i).slice(1);
 
-		for (let round = 0; round < countCount; round++) {
-			const roundPairings = [];
+		for (let round = 0; round < round_count; round++) {
+			const round_pairings = [];
+			
+			//concat with an empty array to copy the values
+			const new_player_indexes = [0].concat(player_indexes);
 
-			const newPlayerIndexes = [0].concat(playerIndexes);
-
-			const firstHalf = newPlayerIndexes.slice(0, playerCount/2);
-			const secondHalf = newPlayerIndexes.slice(playerCount/2, playerCount).reverse();
-
-			for (let i = 0; i < firstHalf.length; i++) {
-				roundPairings.push({
-					playerone: players[firstHalf[i]],
-					playertwo: players[secondHalf[i]],
+			for (let i = 0; i < player_count/2; i++) {
+				round_pairings.push({
+					playerone: players[new_player_indexes[i]],
+					playertwo: players[new_player_indexes[player_count-1-i]],
 					winner: 0
 				});
 			}
 
-			// rotating the array
-			playerIndexes.push(playerIndexes.shift());
-			pairings.push(roundPairings);
+			//rotating the array
+			player_indexes.push(player_indexes.shift());
+			pairings.push(round_pairings);
 		}
 
 		Tournament.findByIdAndUpdate({ _id: id }, {
