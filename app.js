@@ -185,7 +185,7 @@ app.get('/photos', function (req, res) {
 });
 
 app.get('/history', function (req, res) {
-	fs.readFile('./public/tournamethnistory.html', function (err, html) {
+	fs.readFile('./public/tournamenthistory.html', function (err, html) {
 		if (err) {
 			res.writeHead(404);
 			res.write('File not found!');
