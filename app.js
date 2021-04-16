@@ -148,7 +148,7 @@ app.get('/shop', function (req, res) {
 });
 app.get('/tournament', function (req, res) {
 	Tournament.findOne().sort({ date: -1 }).exec(function (err, posts) {
-		if (posts.date < Date.now()) {
+		if (posts.active) {
 			fs.readFile('./public/tournament.html', function (err, html) {
 				if (err) {
 					res.writeHead(404);
@@ -311,7 +311,9 @@ app.post("/api/addtournament", (req, res) => {
 	}
 	try {
 		Tournament.create({
-			date: new Date(req.body.date + "T" + req.body.time).getTime()
+			date: new Date(req.body.date + "T" + req.body.time).getTime(),
+			roundcount: 0,
+			active: false
 		});
 		res.redirect("/admin");
 	} catch (error) {
