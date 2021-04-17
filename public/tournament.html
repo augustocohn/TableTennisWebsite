@@ -39,7 +39,7 @@
                         for(j in response[0].matches[i]){
                             player = response[0].matches[i][j];
                             str +=
-                            '<div class="match"><h5>Match #' + j + '</h5>';
+                            '<div class="match"><h5>Match #' + (parseInt(j)+1) + '</h5>';
                             if(player.winner == 1){
                                 str += '<p class="winner">' + player.playerone + '</p>' +
                                 '<p>' + player.playertwo + '</p>'
