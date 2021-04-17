@@ -12,7 +12,7 @@ const { Tournament } = require("./schema/tournament");
 
 var app = express();
 
-var upload = multer({ dest: './public/'});
+var upload = multer({ dest: './public/' });
 
 //server port can be set via the PORT environment virable
 //if no environment variable is set, default port will be 3000
@@ -308,12 +308,12 @@ app.post("/login", (req, res) => {
 //will place the photos in ./public/images/photos/
 //required variables:
 //	file:	the image to upload and store
-app.post('/api/uploadphoto', upload.single('file'), function(req, res) {
+app.post('/api/uploadphoto', upload.single('file'), function (req, res) {
 	if (!req.session.admin) {
 		return res.json({ message: "Error: User unauthorized" })
 	}
 	var file = __dirname + '/public/images/photos/' + req.file.originalname;
-	fs.rename(req.file.path, file, function(err) {
+	fs.rename(req.file.path, file, function (err) {
 		if (err) {
 			log(err);
 			res.send(500);
@@ -362,14 +362,14 @@ function generateTournamentMatches(id) {
 
 		for (let round = 0; round < round_count; round++) {
 			const round_pairings = [];
-			
+
 			//concat with an empty array to copy the values
 			const new_player_indexes = [0].concat(player_indexes);
 
-			for (let i = 0; i < player_count/2; i++) {
+			for (let i = 0; i < player_count / 2; i++) {
 				round_pairings.push({
 					playerone: players[new_player_indexes[i]],
-					playertwo: players[new_player_indexes[player_count-1-i]],
+					playertwo: players[new_player_indexes[player_count - 1 - i]],
 					winner: 0
 				});
 			}
@@ -429,6 +429,43 @@ app.post("/api/endtournament", (req, res) => {
 			log("Successfully ended tournament " + req.body.id);
 		}
 	});
+});
+
+//route used for advancing a tournament to the next round
+//and setting the winners for each round
+//will reload page
+//required variables:
+//	id:		id of the tournament to advance
+//	result:	array of values corresponding to the winner of each round
+//			ex. a round with 3 matches would send [1, 2, 1] (1st player won, 2nd player won, 1st player won)
+app.post("/api/advancetournament", (req, res) => {
+	if (!req.session.admin) {
+		return res.json({ message: "Error: User unauthorized" })
+	}
+	var result = req.body.result.map(Number);
+
+	Tournament.findById(req.body.id).then(doc => {
+		var rounds = doc.matches[doc.roundcount];
+		var players = doc.players;
+		for (let i = 0; i < rounds.length; i++) {
+			rounds[i].winner = result[i];
+
+			if (result[i] == 1) {
+				let player = players.find(player => player.fullname == rounds[i].playerone);
+				player.wins += 1;
+			}
+			else if (result[i] == 2) {
+				let player = players.find(player => player.fullname == rounds[i].playertwo);
+				player.wins += 1;
+			}
+		}
+
+		doc.roundcount += 1;
+
+		doc.save();
+	});
+
+	res.redirect('back');
 });
 
 //route used for adding players to a future tournament
