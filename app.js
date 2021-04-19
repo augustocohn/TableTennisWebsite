@@ -151,8 +151,8 @@ app.get('/shop', function (req, res) {
 	});
 });
 app.get('/tournament', function (req, res) {
-	Tournament.findOne().sort({ date: -1 }).exec(function (err, posts) {
-		if (posts.active) {
+	Tournament.findOne().sort({ date_created: -1 }).exec(function (err, posts) {
+		if (!posts || posts.active || posts.completed) {
 			fs.readFile('./public/tournament.html', function (err, html) {
 				if (err) {
 					res.writeHead(404);
@@ -335,9 +335,12 @@ app.post("/api/addtournament", (req, res) => {
 	try {
 		Tournament.create({
 			date: new Date(req.body.date + "T" + req.body.time).getTime(),
+			date_created: Date.now(),
 			roundcount: 0,
-			active: false
+			active: false,
+			completed: false
 		});
+		log("Successfully created new tournament");
 		res.redirect("/admin");
 	} catch (error) {
 		return res.json({ message: "Failed to create tournament." });
@@ -410,6 +413,8 @@ app.post("/api/starttournament", (req, res) => {
 			log("Successfully started tournament " + req.body.id);
 		}
 	});
+
+	res.redirect('back');
 });
 
 //route used for ending a tournament
@@ -421,7 +426,8 @@ app.post("/api/endtournament", (req, res) => {
 		return res.json({ message: "Error: User unauthorized" })
 	}
 	Tournament.findByIdAndUpdate({ _id: req.body.id }, {
-		active: false
+		active: false,
+		completed: true
 	}, { safe: true, multi: true }, function (err, obj) {
 		if (err) {
 			log("Error ending tournament " + req.body.id);
@@ -429,6 +435,8 @@ app.post("/api/endtournament", (req, res) => {
 			log("Successfully ended tournament " + req.body.id);
 		}
 	});
+
+	res.redirect('back');
 });
 
 //route used for advancing a tournament to the next round
@@ -505,7 +513,7 @@ app.post("/api/removeplayer", (req, res) => {
 //route used for retrieving tournaments from the db
 //returns json
 app.get("/api/gettournaments", function (req, res) {
-	Tournament.find().sort({ date: -1 }).exec(function (err, posts) {
+	Tournament.find().sort({ date_created: -1 }).exec(function (err, posts) {
 		if (err) {
 			console.log(err);
 		}
