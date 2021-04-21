@@ -35,7 +35,7 @@ app.use(session({
 }));
 
 //mongodb url used for testing, to be cleared before committing 
-const DB_URI = "mongodb+srv://dbAdmin:dbPassword@cluster0.iycaa.mongodb.net/tableTennis?authSource=admin&replicaSet=atlas-s8qatg-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true";
+const DB_URI = "";
 
 //connect to db
 //mongodb url needs to be passed through the DB_URI environment variable
