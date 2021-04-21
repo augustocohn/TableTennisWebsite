@@ -92,68 +92,83 @@
                 "mode": "cors"
             })
             response = await response.json();
-            var round = response[0].roundcount.toString();
-            str = '<div class="round"><h1>' + "Round " + (parseInt(round) + 1) + "</h1><br>";
 
-            for (j in response[0].matches[round]) {
-                player = response[0].matches[round][j];
-                str +=
-                    '<div class="match"><h5>Match #' + (parseInt(j)+1) + '</h5>';
-                if (player.winner == 1) {
-                    str += '<p class="winner">' + player.playerone + '</p>' +
-                        '<p>' + player.playertwo + '</p>'
-                }
-                else if (player.winner == 2) {
-                    str += '<p>' + player.playerone + '</p>' +
-                        '<p class="winner">' + player.playertwo + '</p>'
-                }
-                else {
-                    str += '<p>' + player.playerone + '</p>' +
-                        '<p>' + player.playertwo + '</p>';
-                }
-                str += '</div>';
-            }
-            str +=
-                '</div><br>';
 
-            console.log(str)
-            document.getElementById('matches').innerHTML += str
-            document.getElementById('tournament-date').innerHTML += getTime(response[0].date);
-            stats = [];
-            for (i in response[0].players) {
-                stats.push({ name: response[0].players[i].fullname, wins: response[0].players[i].wins })
-            }
 
             //if the tournmanet is active, hide the start tournament and player lists
-            if (response[0].active) {
-                document.getElementById('start-tournament').style.visibility = "hidden";
-                document.getElementById('leaderboard').style.visibility = "hidden";
+            if (response[0] && response[0].active) {
+                console.log("Loading active tournament...");
+                document.getElementById('create-tournament-div').remove();
+                document.getElementById('start-tournament').remove();
+                document.getElementById('leaderboard').remove();
 
                 document.getElementById('end-tournament').innerHTML +=
                     '<input hidden id="id" name="id" style="display:hidden;" value="' + response[0]._id + '">';
-                document.getElementById('advance-tournament').innerHTML +=
-                    '<input hidden id="id" name="id" style="display:hidden;" value="' + response[0]._id + '">';
                 document.getElementById('advance-tournament-debug').innerHTML +=
                     '<input hidden id="id" name="id" style="display:hidden;" value="' + response[0]._id + '">';
-                
-                //add a dropdown for every match to select the winners for on the debug menu
-                //TODO: delete this and allow the user to select who wins by clicking on the boxes
-                for (j in response[0].matches[round]) {
-                    document.getElementById('advance-tournament-debug').innerHTML +=
-                        '<select name="result[]" id="result" required>' +
-                        '<option value="0">None</option>' +
-                        '<option value="1">Player 1</option>' +
-                        '<option value="2">Player 2</option>' +
-                        '</select>'
+
+                //if the tournament is not over, show round pairings
+                if (response[0].roundcount < response[0].matches.length) {
+                    var round = response[0].roundcount.toString();
+                    var str = '<div class="round"><h1>' + "Round " + (parseInt(round) + 1) + "</h1><br>";
+
+                    for (j in response[0].matches[round]) {
+                        player = response[0].matches[round][j];
+                        str +=
+                            '<div class="match"><h5>Match #' + (parseInt(j) + 1) + '</h5>';
+                        if (player.winner == 1) {
+                            str += '<p class="winner">' + player.playerone + '</p>' +
+                                '<p>' + player.playertwo + '</p>'
+                        }
+                        else if (player.winner == 2) {
+                            str += '<p>' + player.playerone + '</p>' +
+                                '<p class="winner">' + player.playertwo + '</p>'
+                        }
+                        else {
+                            str += '<p>' + player.playerone + '</p>' +
+                                '<p>' + player.playertwo + '</p>';
+                        }
+                        str += '</div>';
+                    }
+                    str +=
+                        '</div><br>';
+
+                    console.log(str)
+                    document.getElementById('matches').innerHTML += str
+
+
+                    //add a dropdown for every match to select the winners for on the debug menu
+                    //TODO: delete this and allow the user to select who wins by clicking on the boxes
+                    for (j in response[0].matches[round]) {
+                        document.getElementById('advance-tournament-debug').innerHTML +=
+                            '<select name="result[]" id="result" required>' +
+                            '<option value="0">None</option>' +
+                            '<option value="1">Player 1</option>' +
+                            '<option value="2">Player 2</option>' +
+                            '</select>'
+                    }
+                } else {
+                    document.getElementById('advance-tournament-div').remove();
+                    document.getElementById('matches').innerHTML += '<p>All rounds have been played.</p>';
                 }
             }
-            else {
-                document.getElementById('end-tournament').style.visibility = "hidden";
-                document.getElementById('advance-tournament').style.visibility = "hidden";
+            //else if the there is an inactive but uncompleted tournament,
+            //allow the pruning of players
+            else if (response[0] && !response[0].completed) {
+                console.log("Loading inactive tournament...");
+                document.getElementById('end-tournament').remove();
+                document.getElementById('create-tournament-div').remove();
+                document.getElementById('advance-tournament-div').remove();
+                document.getElementById('matches').remove();
 
                 document.getElementById('start-tournament').innerHTML +=
                     '<input hidden id="id" name="id" style="display:hidden;" value="' + response[0]._id + '">';
 
+                //add players to the player list
+                var stats = [];
+                for (i in response[0].players) {
+                    stats.push({ name: response[0].players[i].fullname, wins: response[0].players[i].wins })
+                }
                 for (i in stats) {
                     document.getElementById('leaderboard').innerHTML +=
                         '<form action="/api/removeplayer" method="POST">' +
@@ -163,6 +178,11 @@
                         '<input type="submit" id="post" value="Remove">' +
                         '</form>'
                 }
+            }
+            //else, there are no active or incomplete tournaments, only allow new tournament creation
+            else {
+                console.log("No future tournament found.");
+                document.getElementById('edit-tournament-div').remove();
             }
 
         }
@@ -193,7 +213,7 @@
                 <input type="submit" id="post" value="Post">
             </form>
             <hr>
-            <h4>Edit</h4>
+            <h4>Edit Announcements</h4>
             <br>
             <div id="editannouncements">
 
@@ -210,23 +230,27 @@
                 <input type="file" name="file" id="upload-file" required />
                 <input type="submit" id="post" value="Upload">
             </form>
+            <hr>
+            <br>
             <h5 class="admin-category">
                 Tournaments
             </h5>
-            <hr>
-            <h4>Create New Tournament</h4>
-            <form action="/api/addtournament" method="POST" id="post-tournament">
-                <label for="tournament-date">Select a date:</label>
-                <input type="date" name="date" id="tournament-date" required />
-                <br />
-                <label for="tournament-time">Select a time:</label>
-                <input type="time" name="time" id="tournament-time" required />
-                <br />
-                <input type="submit" id="post" value="Post">
-            </form>
-            <hr>
-            <h4>Edit Current Tournament</h4>
-            <div>
+            <div id="create-tournament-div">
+                <hr>
+                <h4>Create New Tournament</h4>
+                <form action="/api/addtournament" method="POST" id="post-tournament">
+                    <label for="tournament-date">Select a date:</label>
+                    <input type="date" name="date" id="tournament-date" required />
+                    <br />
+                    <label for="tournament-time">Select a time:</label>
+                    <input type="time" name="time" id="tournament-time" required />
+                    <br />
+                    <input type="submit" id="post" value="Post">
+                </form>
+            </div>
+            <div id="edit-tournament-div">
+                <hr>
+                <h4>Edit Current Tournament</h4>
                 <div id="leaderboard">
                     <h5>Registered Players</h5>
                     <hr>
@@ -240,16 +264,17 @@
                 <form action="/api/endtournament" method="POST" id="end-tournament">
                     <input type="submit" id="post" value="End Tournament">
                 </form>
-                <form action="/api/advancetournament" method="POST" id="advance-tournament">
-                    <input type="submit" id="post" value="Advance Tournament">
-                </form>
+
+                <hr>
+                <div id="advance-tournament-div">
+                    <h4>Submit winners (TEST)</h4>
+                    <form action="/api/advancetournament" method="POST" id="advance-tournament-debug">
+                        <input type="submit" id="post" value="Advance Tournament">
+                        <br>
+                    </form>
+                </div>
+
             </div>
-            <hr>
-            <h4>Submit winners (TEST)</h4>
-            <form action="/api/advancetournament" method="POST" id="advance-tournament-debug">
-                <input type="submit" id="post" value="Advance Tournament">
-                <br>
-            </form>
 
             <a class="tournament-history" href="/history">Tournament History</a>
         </div>

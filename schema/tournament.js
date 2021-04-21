@@ -7,6 +7,10 @@ const TournamentSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    date_created: {
+        type: Number,
+        required: true
+    },
     roundcount: {
         type: Number,
         required: true
@@ -14,6 +18,10 @@ const TournamentSchema = new mongoose.Schema({
     active: {
         type: Boolean,
         required: true
+    },
+    completed: {
+        type: Boolean,
+        required: false
     }
 });
 

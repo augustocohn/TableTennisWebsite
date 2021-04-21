@@ -1,0 +1,26 @@
+{
+  "name": "tabletenniswebsite",
+  "version": "1.0.0",
+  "description": "UF Table Tennis Club Website",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "mongoose": "^5.12.5",
+    "multer": "^1.4.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/augustocohn/TableTennisWebsite.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/augustocohn/TableTennisWebsite/issues"
+  },
+  "homepage": "https://github.com/augustocohn/TableTennisWebsite#readme"
+}
