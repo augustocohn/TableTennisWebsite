@@ -1,118 +1,260 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link type="text/css" rel="stylesheet" href="css/style.css" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        <title>UF | Table Tennis Club</title>
-        <script
-            src="https://code.jquery.com/jquery-3.3.1.js"
-            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-            crossorigin="anonymous">
-        </script>
-        <script> 
-            $(function(){
-                $("#header").load("header.html"); 
-                $("#footer").load("footer.html"); 
-            });
 
-            function getTime(x) {
-                d = new Date(x);
-                return d.toDateString() + ' ' + d.toLocaleTimeString();
-            }
-                var req = new XMLHttpRequest();
-                req.overrideMimeType("application/json");
-                req.open("GET", '/api/getannouncements', true);
-                
-                req.onload = function() {
-                    var res = JSON.parse(req.responseText);
-                    for(i in res){
-                    document.getElementById('editannouncements').innerHTML = document.getElementById('editannouncements').innerHTML
-                    + '<div class="announcement-edit" id ='+ res[i]._id +'>'
-                    + '<h5 id=title'+res[i]._id+'>' + res[i].title + '</h5>'
-                    + '<p id=body'+res[i]._id+'>' + res[i].body + '</p>'
-                    + '<h4 id=date'+res[i]._id+'>' + getTime(res[i].date_created)
+<head>
+    <link type="text/css" rel="stylesheet" href="css/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0" />
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="pragma" content="no-cache" />
+
+    <title>UF | Table Tennis Club</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous">
+        </script>
+    <script>
+        $(function () {
+            $("#header").load("header.html");
+            $("#footer").load("footer.html");
+        });
+
+        function getTime(x) {
+            d = new Date(x);
+            return d.toDateString() + ' ' + d.toLocaleTimeString();
+        }
+        var req = new XMLHttpRequest();
+        req.overrideMimeType("application/json");
+        req.open("GET", '/api/getannouncements', true);
+
+        req.onload = function () {
+            var res = JSON.parse(req.responseText);
+            for (i in res) {
+                document.getElementById('editannouncements').innerHTML = document.getElementById('editannouncements').innerHTML
+                    + '<div class="announcement-edit" id =' + res[i]._id + '>'
+                    + '<h5 id=title' + res[i]._id + '>' + res[i].title + '</h5>'
+                    + '<p id=body' + res[i]._id + '>' + res[i].body + '</p>'
+                    + '<h4 id=date' + res[i]._id + '>' + getTime(res[i].date_created)
                     + '</h4>'
                     + `<button onclick="editAnnouncement(this.id)" id="${res[i]._id}">Edit</button><button onclick="deleteAnnouncement(this.id)" id="${res[i]._id}">Delete</button>`
-                    //use res[i]."_id"
-                    
-                    }
-                    
-                };
-                
-                req.send(null);
-        </script> 
-        
-        <script>
-            function editAnnouncement(clicked_id) {
-                    var title = document.getElementById('title'+clicked_id).textContent;
-                    let body = document.getElementById('body'+clicked_id).innerHTML;
-                    let date = document.getElementById('date'+clicked_id).innerText;
+                //use res[i]."_id"
 
-                    document.getElementById(clicked_id).innerHTML = '<form action="/api/editannouncement" method="POST" id="edit-announcement">'
-                    + `<input type="text" style="display:none" value="${clicked_id}" name="id" required />`
-                    + '<br/>'
-                    + `<input type="text" value ="${title}" name="title" required />`
-                    + '<br/>'
-                    + `<textarea rows="10" cols="115" name="body" required >${body}</textarea>`
-                    + '<br/>'
-                    + '<input type="submit" id="post" value="Post">'
-                    + '</form>'
-                    
-                    /*document.getElementById(clicked_id).innerHTML = `<input type= "text" value ="${title}">` + '<br/>'
-                    + '<textarea rows="8" cols="100">' + body + '</textarea>' + '<br/>'
-                    + '<h4>' + date + '</h4>'
-                    + `<button id="edit-submit" onclick='editSubmit("${title}","${body}","${date}","${clicked_id}")'>Submit</button>` 
-                    + '<button>Delete</button>'*/
-                }
-        </script>
-
-        <script>
-            function deleteAnnouncement(clicked_id) {
-                document.getElementById(clicked_id).innerHTML = document.getElementById(clicked_id).innerHTML + '<form action="/api/removeannouncement" method="POST" id="remove-announcement">'
-                    + `<input type="text" style="display:none" value="${clicked_id}" name="id" required />`
-                    + '<input type="submit" id="delete" value="Are you sure you want to delete?">'
-                    + '</form>'
             }
-        </script>
 
-    </head>
-    <body>
-        
-        <div id="header"></div>
-        <div id="main">
-            <h1>
-                Admin Panel
-            </h1>
-            <div id="content">
-                <h5 class="admin-category">
-                    Announcements
-                </h5>
-                <hr>
-                <h4 >Post Announcement</h4>
-                <br>
-                <form action="/api/addannouncement" method="POST" id="post-announcement">
-                    <input type="text" placeholder="Title" name="title" required />
-                    <br/>
-                    <textarea name="body" placeholder="Announcement" required ></textarea>
-                    <br/>
-                    <input type="submit" id="post" value="Post">
-                </form>
-                <hr>
-                <h4>Edit</h4>
-                <br>
-                <div id="editannouncements">
+        };
+
+        req.send(null);
+    </script>
+
+    <script>
+        function editAnnouncement(clicked_id) {
+            var title = document.getElementById('title' + clicked_id).textContent;
+            let body = document.getElementById('body' + clicked_id).innerHTML;
+            let date = document.getElementById('date' + clicked_id).innerText;
+
+            document.getElementById(clicked_id).innerHTML = '<form action="/api/editannouncement" method="POST" id="edit-announcement">'
+                + `<input type="text" style="display:none" value="${clicked_id}" name="id" required />`
+                + '<br/>'
+                + `<input type="text" value ="${title}" name="title" required />`
+                + '<br/>'
+                + `<textarea rows="10" cols="115" name="body" required >${body}</textarea>`
+                + '<br/>'
+                + '<input type="submit" id="post" value="Post">'
+                + '</form>'
+
+            /*document.getElementById(clicked_id).innerHTML = `<input type= "text" value ="${title}">` + '<br/>'
+            + '<textarea rows="8" cols="100">' + body + '</textarea>' + '<br/>'
+            + '<h4>' + date + '</h4>'
+            + `<button id="edit-submit" onclick='editSubmit("${title}","${body}","${date}","${clicked_id}")'>Submit</button>` 
+            + '<button>Delete</button>'*/
+        }
+    </script>
+
+    <script>
+        function deleteAnnouncement(clicked_id) {
+            document.getElementById(clicked_id).innerHTML = document.getElementById(clicked_id).innerHTML + '<form action="/api/removeannouncement" method="POST" id="remove-announcement">'
+                + `<input type="text" style="display:none" value="${clicked_id}" name="id" required />`
+                + '<input type="submit" id="delete" value="Are you sure you want to delete?">'
+                + '</form>'
+        }
+    </script>
+    <script>
+        async function getTournaments() {
+            response = await fetch("/api/gettournaments", {
+                "headers": {
+                    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                    "accept-language": "en-US,en;q=0.9,la;q=0.8"
+                },
+                "referrerPolicy": "strict-origin-when-cross-origin",
+                "body": null,
+                "method": "GET",
+                "mode": "cors"
+            })
+            response = await response.json();
+            var round = response[0].roundcount.toString();
+            str = '<div class="round"><h1>' + "Round " + (parseInt(round) + 1) + "</h1><br>";
+
+            for (j in response[0].matches[round]) {
+                player = response[0].matches[round][j];
+                str +=
+                    '<div class="match"><h5>Match #' + (parseInt(j)+1) + '</h5>';
+                if (player.winner == 1) {
+                    str += '<p class="winner">' + player.playerone + '</p>' +
+                        '<p>' + player.playertwo + '</p>'
+                }
+                else if (player.winner == 2) {
+                    str += '<p>' + player.playerone + '</p>' +
+                        '<p class="winner">' + player.playertwo + '</p>'
+                }
+                else {
+                    str += '<p>' + player.playerone + '</p>' +
+                        '<p>' + player.playertwo + '</p>';
+                }
+                str += '</div>';
+            }
+            str +=
+                '</div><br>';
+
+            console.log(str)
+            document.getElementById('matches').innerHTML += str
+            document.getElementById('tournament-date').innerHTML += getTime(response[0].date);
+            stats = [];
+            for (i in response[0].players) {
+                stats.push({ name: response[0].players[i].fullname, wins: response[0].players[i].wins })
+            }
+
+            //if the tournmanet is active, hide the start tournament and player lists
+            if (response[0].active) {
+                document.getElementById('start-tournament').style.visibility = "hidden";
+                document.getElementById('leaderboard').style.visibility = "hidden";
+
+                document.getElementById('end-tournament').innerHTML +=
+                    '<input hidden id="id" name="id" style="display:hidden;" value="' + response[0]._id + '">';
+                document.getElementById('advance-tournament').innerHTML +=
+                    '<input hidden id="id" name="id" style="display:hidden;" value="' + response[0]._id + '">';
+                document.getElementById('advance-tournament-debug').innerHTML +=
+                    '<input hidden id="id" name="id" style="display:hidden;" value="' + response[0]._id + '">';
                 
-                </div>
+                //add a dropdown for every match to select the winners for on the debug menu
+                //TODO: delete this and allow the user to select who wins by clicking on the boxes
+                for (j in response[0].matches[round]) {
+                    document.getElementById('advance-tournament-debug').innerHTML +=
+                        '<select name="result[]" id="result" required>' +
+                        '<option value="0">None</option>' +
+                        '<option value="1">Player 1</option>' +
+                        '<option value="2">Player 2</option>' +
+                        '</select>'
+                }
+            }
+            else {
+                document.getElementById('end-tournament').style.visibility = "hidden";
+                document.getElementById('advance-tournament').style.visibility = "hidden";
 
+                document.getElementById('start-tournament').innerHTML +=
+                    '<input hidden id="id" name="id" style="display:hidden;" value="' + response[0]._id + '">';
+
+                for (i in stats) {
+                    document.getElementById('leaderboard').innerHTML +=
+                        '<form action="/api/removeplayer" method="POST">' +
+                        '<input hidden id="id" name="id" style="display:hidden;" value="' + response[0]._id + '">' +
+                        '<input hidden id="fullname" name="fullname" style="display:hidden;" value="' + stats[i].name + '">' +
+                        '<p>' + stats[i].name + '</p>' +
+                        '<input type="submit" id="post" value="Remove">' +
+                        '</form>'
+                }
+            }
+
+        }
+        getTournaments();
+
+    </script>
+</head>
+
+<body>
+
+    <div id="header"></div>
+    <div id="main">
+        <h1>
+            Admin Panel
+        </h1>
+        <div id="content">
+            <h5 class="admin-category">
+                Announcements
+            </h5>
+            <hr>
+            <h4>Post Announcement</h4>
+            <br>
+            <form action="/api/addannouncement" method="POST" id="post-announcement">
+                <input type="text" placeholder="Title" name="title" required />
+                <br />
+                <textarea name="body" placeholder="Announcement" required></textarea>
+                <br />
+                <input type="submit" id="post" value="Post">
+            </form>
+            <hr>
+            <h4>Edit</h4>
+            <br>
+            <div id="editannouncements">
+
+            </div>
+
+            <br>
+            <h5 class="admin-category">
+                Photos
+            </h5>
+            <hr>
+            <h4>Upload Photos</h4>
+            <form action="/api/uploadphoto" method="POST" id="upload-photo" enctype="multipart/form-data">
+                <label for="upload-file">Select a file:</label>
+                <input type="file" name="file" id="upload-file" required />
+                <input type="submit" id="post" value="Upload">
+            </form>
+            <h5 class="admin-category">
+                Tournaments
+            </h5>
+            <hr>
+            <h4>Create New Tournament</h4>
+            <form action="/api/addtournament" method="POST" id="post-tournament">
+                <label for="tournament-date">Select a date:</label>
+                <input type="date" name="date" id="tournament-date" required />
+                <br />
+                <label for="tournament-time">Select a time:</label>
+                <input type="time" name="time" id="tournament-time" required />
+                <br />
+                <input type="submit" id="post" value="Post">
+            </form>
+            <hr>
+            <h4>Edit Current Tournament</h4>
+            <div>
+                <div id="leaderboard">
+                    <h5>Registered Players</h5>
+                    <hr>
+                </div>
+                <div id="matches">
+
+                </div>
+                <form action="/api/starttournament" method="POST" id="start-tournament">
+                    <input type="submit" id="post" value="Start Tournament">
+                </form>
+                <form action="/api/endtournament" method="POST" id="end-tournament">
+                    <input type="submit" id="post" value="End Tournament">
+                </form>
+                <form action="/api/advancetournament" method="POST" id="advance-tournament">
+                    <input type="submit" id="post" value="Advance Tournament">
+                </form>
+            </div>
+            <hr>
+            <h4>Submit winners (TEST)</h4>
+            <form action="/api/advancetournament" method="POST" id="advance-tournament-debug">
+                <input type="submit" id="post" value="Advance Tournament">
                 <br>
-                <h5 class="admin-category">
-                    Tournaments
-                </h5>
-                <hr>
-                <button>End Current Tournament</button>
-                <button>Create New Tournament</button>
-            </div>      
+            </form>
+
+            <a class="tournament-history" href="/history">Tournament History</a>
         </div>
-        <div id="footer"></div>
-    </body>
+    </div>
+    <div id="footer"></div>
+</body>
+
 </html>

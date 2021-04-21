@@ -25,7 +25,7 @@
                 document.getElementById('matches').innerHTML = '';
                 document.getElementById('tournament-date').innerHTML = '';
                 document.getElementById('leaderboard').innerHTML = '';
-                response = await fetch("http://localhost:3000/api/gettournament", {
+                response = await fetch("/api/gettournament", {
                     "headers": {
                         "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
                         "accept-language": "en-US,en;q=0.9,la;q=0.8",
@@ -41,22 +41,22 @@
                 str = ''
                 for(i in response.matches){
                     str +=
-                    '<div class="round"><h1>' + i + "</h1><br>";
-                        for(j in response.matches[i][0]){
-                            player = response.matches[i][0][j].split(',');
+                    '<div class="round"><h1>' + "Round " + (parseInt(i)+1) + "</h1><br>";
+                        for(j in response.matches[i]){
+                            player = response.matches[i][j];
                             str +=
-                            '<div class="match"><h5>Match #' + j + '</h5>';
-                            if(player[2] == 1){
-                                str += '<p class="winner">' + player[0] + '</p>' +
-                                '<p>' + player[1] + '</p>'
+                            '<div class="match"><h5>Match #' + (parseInt(j)+1) + '</h5>';
+                            if(player.winner == 1){
+                                str += '<p class="winner">' + player.playerone + '</p>' +
+                                '<p>' + player.playertwo + '</p>'
                             }
-                            else if(player[2] == 2){
-                                str += '<p>' + player[0] + '</p>' +
-                                '<p class="winner">' + player[1] + '</p>'
+                            else if(player.winner == 2){
+                                str += '<p>' + player.playerone + '</p>' +
+                                '<p class="winner">' + player.playertwo + '</p>'
                             }
                             else{
-                                str += '<p>' + player[0] + '</p>' +
-                                '<p>' + player[1] + '</p>';
+                                str += '<p>' + player.playerone + '</p>' +
+                                '<p>' + player.playertwo + '</p>';
                             }
                             str += '</div>';
                         }

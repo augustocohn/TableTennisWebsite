@@ -15,21 +15,34 @@
                 $("#footer").load("footer.html"); 
             });
         </script> 
+
+        <script>
+
+            console.log("some scripts")
+            var req = new XMLHttpRequest();
+            
+            req.open("GET", '/api/getphotos', true);
+            
+            req.onload = function () {
+                var res = JSON.parse(req.responseText)
+                for (i in res) {
+                    console.log(res)
+                    document.getElementById('content').innerHTML += 
+                    "<a href = "+ res[i] +">" +
+                    "<img src = "+ res[i] +" >" +
+                    "</a>"
+                }
+            }
+            req.send(null)
+        </script>
+
     </head>
     <body>
         <div id="header"></div>
         <div id="main" style="width:90vw;">
             <h1>Photos</h1>
             <div id="content" class="photo-div">
-                <img src="" />
-                <img src="" />
-                <img src="" />
-                <img src="" />
-                <img src="" />
-                <img src="" />
-                <img src="" />
-                <img src="" />
-                <img src="" />
+                
             </div>      
         </div>
         <div id="footer"></div>
