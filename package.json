@@ -1,7 +1,7 @@
 {
   "name": "tabletenniswebsite",
   "version": "1.0.0",
-  "description": "UF Table Tennis Club Website # Requirements * NodeJS * ExpressJS * MongoDB",
+  "description": "UF Table Tennis Club Website",
   "main": "app.js",
   "dependencies": {
     "express": "^4.17.1",
