@@ -176,6 +176,20 @@ app.get('/tournament', function (req, res) {
 		}
 	})
 });
+
+
+
+app.get("/api/getphotos", function (req, res) {
+	let data = []
+	const testFolder = './public/images/photos';
+	fs.readdirSync(testFolder).forEach(file => {
+		data.push("/images/photos/" + file)
+	});
+
+	return res.send(data);
+	
+});
+
 app.get('/photos', function (req, res) {
 	fs.readFile('./public/photos.html', function (err, html) {
 		if (err) {

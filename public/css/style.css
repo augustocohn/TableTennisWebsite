@@ -311,6 +311,18 @@ footer a{
     background:black;
     width:400px;
     height:250px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.photo-div a{
+    
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: hidden;
 }
 
 .product {
@@ -416,7 +428,7 @@ footer a{
 @media only screen and (max-width : 640px) {
 
 	header {
-
+        
 		position: absolute;
         width:100vw;
 
@@ -558,7 +570,7 @@ footer a{
     }
     
     #content{
-    
+        
         background: white;
         padding: 25px;
         min-height:60vh;
@@ -679,7 +691,9 @@ footer a{
         padding: 25px;
         min-height:60vh;
         margin-top:10px;
+        
         box-shadow: 0px 0px 5px black;
+        
     }
     
     .photo-div img{
@@ -687,6 +701,8 @@ footer a{
         background:black;
         width:400px;
         height:250px;
+        margin-left: 5px;
+        margin-right: 5px;
     }
     
     .product {
